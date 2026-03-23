@@ -206,10 +206,16 @@ h1,h2,h3,h4,h5,h6 {
   background-size: cover;
   background-position: center;
   color: #fff;
-  padding: 5rem 1.25rem 4rem;
+  padding: 4rem 1rem 3.5rem;
   position: relative;
   overflow: hidden;
   text-align: center;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .hero { padding: 8rem 1.25rem 6.5rem; min-height: 85vh; }
 }
 .hero::before {
   content: '';
@@ -309,18 +315,25 @@ h1,h2,h3,h4,h5,h6 {
 
 .category-card {
   position: relative;
-  min-height: 220px;
+  aspect-ratio: 4/5;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border);
   cursor: pointer;
   transition: var(--transition);
   text-decoration: none;
-  background: var(--primary-50); /* Fallback */
+  background: var(--primary-50);
+}
+@media (min-width: 640px) {
+  .category-card { min-height: 220px; padding: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .category-card { aspect-ratio: 1/1.2; }
 }
 
 .category-bg {
@@ -909,8 +922,8 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--primary);
 }
 @media (max-width: 768px) {
-  .trust-bar { gap: 1.5rem; padding: 2.5rem 1.25rem; }
-  .trust-item { font-size: .9rem; }
+  .trust-bar { gap: 1.25rem; padding: 2.5rem 1rem; }
+  .trust-item { font-size: .85rem; flex: 1 1 140px; justify-content: center; }
   .trust-item i { font-size: 1.8rem; }
 }
 
