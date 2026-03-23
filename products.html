@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shop Nuts & Dry Fruits – NutriNuts</title>
+  <meta name="description" content="Browse and buy premium almonds, cashews, pistachios, walnuts, seeds and more. Filter by category, price, and more."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .page-hero { background:linear-gradient(135deg,var(--brown-dark),var(--brown)); color:#fff; padding:3rem 1.25rem 2.5rem; }
+    .page-hero h1 { color:#fff; font-size:clamp(1.6rem,4vw,2.5rem); margin-bottom:.5rem; }
+    .page-hero p { opacity:.85; font-size:.95rem; }
+    .products-layout { display:grid; grid-template-columns:1fr; gap:1.5rem; }
+    @media(min-width:1024px){ .products-layout { grid-template-columns:250px 1fr; } }
+    .filter-panel { background:var(--white); border-radius:var(--radius-md); padding:1.5rem; border:1px solid var(--border); height:fit-content; position:sticky; top:80px; }
+    .filter-section { margin-bottom:1.5rem; }
+    .filter-section h4 { font-size:.82rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brown-dark); margin-bottom:.85rem; font-family:'Inter',sans-serif; }
+    .filter-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .85rem; border-radius:100px; border:1.5px solid var(--border); background:transparent; font-size:.8rem; font-weight:500; cursor:pointer; color:var(--text-med); transition:var(--transition); margin:.25rem .2rem; }
+    .filter-chip:hover, .filter-chip.active { border-color:var(--brown); background:var(--brown); color:#fff; }
+    .sort-bar { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+    .results-count { font-size:.85rem; color:var(--text-light); flex:1; }
+    .search-wrap { position:relative; }
+    .search-wrap i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--text-light); }
+    .search-wrap input { padding-left:2.75rem; }
+    .price-labels { display:flex; justify-content:space-between; font-size:.8rem; color:var(--text-light); margin-top:.5rem; }
+    .mobile-filter-btn { display:flex; }
+    @media(min-width:1024px){ .mobile-filter-btn { display:none; } .filter-panel.mobile-only { display:block; } }
+    .drawer-overlay { position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none; }
+    .drawer-overlay.open { display:block; }
+    .filter-drawer { position:fixed;left:0;top:0;bottom:0;width:min(300px,85vw);background:var(--white);z-index:301;padding:1.5rem;overflow-y:auto;transform:translateX(-100%);transition:transform .3s; }
+    .drawer-overlay.open .filter-drawer { transform:translateX(0); }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">🌰 Nutri<span>Nuts</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+        <a href="cart.html" class="nav-icon-btn"><i class="ri-shopping-cart-2-line"></i><span class="cart-badge" id="cart-badge" style="display:none">0</span></a>
+        <a href="auth.html" class="nav-icon-btn" id="nav-auth-link"><i class="ri-user-line"></i></a>
+        <button class="nav-icon-btn hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb" style="color:rgba(255,255,255,.7);margin-bottom:.75rem;">
+        <a href="index.html" style="color:rgba(255,255,255,.7)">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="current" style="color:#fff">Products</span>
+      </div>
+      <h1>Our Premium Products</h1>
+      <p>Handpicked nuts, seeds & dry fruits — quality you can taste</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Search + Sort bar -->
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
+        <div class="search-wrap" style="flex:1;min-width:200px;">
+          <i class="ri-search-line"></i>
+          <input type="text" id="searchInput" class="form-control" placeholder="Search almonds, cashews…" style="padding-left:2.75rem;"/>
+        </div>
+        <div class="sort-bar">
+          <button class="btn btn-outline btn-sm mobile-filter-btn" id="openFilterBtn"><i class="ri-filter-3-line"></i> Filters</button>
+          <select id="sortSelect" class="form-control" style="width:auto;padding:.55rem 2rem .55rem .9rem;">
+            <option value="">Sort: Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+          </select>
+        </div>
+        <span class="results-count" id="resultsCount"></span>
+      </div>
+
+      <div class="products-layout">
+        <!-- Filter Panel (Desktop) -->
+        <aside class="filter-panel" id="filterPanelDesktop" aria-label="Product filters">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+            <h3 style="font-size:1rem;">Filters</h3>
+            <button class="btn btn-sm" id="clearFiltersBtn" style="padding:.3rem .7rem;font-size:.75rem;">Clear All</button>
+          </div>
+          <div class="filter-section">
+            <h4>Category</h4>
+            <div id="categoryFilters">
+              <button class="filter-chip active" data-category="all">All</button>
+              <!-- Dynamic Categories -->
+            </div>
+          </div>
+          <div class="filter-section">
+            <h4>Price Range <small style="font-weight:400;font-size:.75rem;">(per 250g)</small></h4>
+            <input type="range" id="priceRange" min="0" max="1000" value="1000" step="50"/>
+            <div class="price-labels"><span>₹0</span><span id="priceLabel">₹1000+</span></div>
+          </div>
+          <div class="filter-section">
+            <h4>Quick Filters</h4>
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.875rem;margin-bottom:.5rem;">
+              <input type="checkbox" id="bestSellerFilter" style="accent-color:var(--brown);"/> Best Sellers Only
+            </label>
+          </div>
+        </aside>
+
+        <!-- Products Grid -->
+        <div>
+          <div class="product-grid" id="productsGrid">
+            <div class="loading-overlay" style="grid-column:1/-1;"><div class="spinner"></div><p>Loading products…</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mobile Filter Drawer -->
+  <div class="drawer-overlay" id="filterDrawer">
+    <div class="filter-drawer">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+        <h3 style="font-size:1rem;">Filters</h3>
+        <button class="nav-icon-btn" id="closeFilterBtn"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="filter-section">
+        <h4>Category</h4>
+        <div id="categoryFiltersMob">
+          <button class="filter-chip active" data-category="all">All</button>
+          <!-- Dynamic Categories -->
+        </div>
+      </div>
+      <div class="filter-section">
+        <h4>Price Range</h4>
+        <input type="range" id="priceRangeMob" min="0" max="1000" value="1000" step="50"/>
+        <div class="price-labels"><span>₹0</span><span id="priceLabelMob">₹1000+</span></div>
+      </div>
+      <button class="btn btn-primary btn-full" id="applyFilterBtn" style="margin-top:1rem;">Apply Filters</button>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="bottom-nav-item"><i class="ri-home-5-line"></i><span>Home</span></a>
+    <a href="products.html" class="bottom-nav-item active"><i class="ri-store-2-fill"></i><span>Shop</span></a>
+    <a href="cart.html" class="bottom-nav-item"><i class="ri-shopping-cart-2-line"></i><span class="bottom-nav-badge" data-cart style="display:none">0</span><span>Cart</span></a>
+    <a href="dashboard.html" class="bottom-nav-item"><i class="ri-user-line"></i><span>Account</span></a>
+  </nav>
+  <a href="https://wa.me/919999999999" class="whatsapp-float" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i></a>
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initNavAuth, initTheme } from './js/auth.js';
+    import { fetchProducts, renderProductCards, fetchCategories } from './js/products.js';
+    import { updateCartBadge } from './js/cart.js';
+
+    initTheme(); initNavAuth(); updateCartBadge();
+
+    let filters = { category:'all', maxPrice:1000, search:'', sortBy:'', bestseller:false };
+
+    // Read URL params
+    const params = new URLSearchParams(location.search);
+    if(params.get('category')) filters.category = params.get('category');
+    if(params.get('search'))   filters.search = params.get('search');
+
+    async function initPage() {
+      await loadCategories();
+      await loadProducts();
+    }
+
+    async function loadCategories() {
+      try {
+        const cats = await fetchCategories();
+        const renderChips = (containerId) => {
+          const container = document.getElementById(containerId);
+          if(!container) return;
+          const currentCategory = filters.category;
+          container.innerHTML = `<button class="filter-chip ${currentCategory==='all'?'active':''}" data-category="all">All</button>` + 
+            cats.map(c => `<button class="filter-chip ${currentCategory===c.id?'active':''}" data-category="${c.id}">${c.name}</button>`).join('');
+          
+          container.querySelectorAll('.filter-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+              document.querySelectorAll(`#categoryFilters .filter-chip, #categoryFiltersMob .filter-chip`).forEach(b => b.classList.remove('active'));
+              // Target both desktop and mobile buttons with same category
+              document.querySelectorAll(`.filter-chip[data-category="${btn.dataset.category}"]`).forEach(b => b.classList.add('active'));
+              filters.category = btn.dataset.category;
+              loadProducts();
+            });
+          });
+        };
+        renderChips('categoryFilters');
+        renderChips('categoryFiltersMob');
+      } catch(e) {
+        console.error("Error loading categories:", e);
+      }
+    }
+
+    async function loadProducts() {
+      document.getElementById('productsGrid').innerHTML = `<div class="loading-overlay" style="grid-column:1/-1;"><div class="spinner"></div><p>Loading…</p></div>`;
+      try {
+        const prods = await fetchProducts(filters);
+        document.getElementById('resultsCount').textContent = `${prods.length} product${prods.length!==1?'s':''} found`;
+        renderProductCards(prods, 'productsGrid');
+      } catch(e) {
+        // Fallback demo products
+        const demo = [
+          {id:'1',name:'California Almonds',category:'Almonds',images:['https://images.unsplash.com/photo-1508313527902-1571d929be67?w=400&q=80'],prices:{'250g':299,'500g':549,'1kg':999},rating:4.8,reviewCount:142,bestSeller:true},
+          {id:'2',name:'Premium Cashews W240',category:'Cashews',images:['https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80'],prices:{'250g':249,'500g':479,'1kg':879},rating:4.9,reviewCount:98,bestSeller:true},
+          {id:'3',name:'Roasted Pistachios',category:'Pistachios',images:['https://images.unsplash.com/photo-1519864600-ca20a5630e6c?w=400&q=80'],prices:{'250g':349,'500g':649,'1kg':1199},rating:4.7,reviewCount:67},
+          {id:'4',name:'Walnut Kernels',category:'Walnuts',images:['https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80'],prices:{'250g':299,'500g':569,'1kg':1049},rating:4.6,reviewCount:55},
+          {id:'5',name:'Medjool Dates',category:'Dates',images:['https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400&q=80'],prices:{'250g':189,'500g':359,'1kg':649},rating:4.9,reviewCount:203},
+          {id:'6',name:'Chia Seeds',category:'Seeds',images:['https://images.unsplash.com/photo-1610725664285-7c57e6eeac3f?w=400&q=80'],prices:{'250g':149,'500g':279,'1kg':499},rating:4.5,reviewCount:44},
+          {id:'7',name:'Seedless Raisins',category:'Raisins',images:['https://images.unsplash.com/photo-1597362925523-c0578edcb614?w=400&q=80'],prices:{'250g':129,'500g':239,'1kg':429},rating:4.4,reviewCount:79},
+          {id:'8',name:'Brazil Nuts',category:'Almonds',images:['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'],prices:{'250g':399,'500g':749,'1kg':1399},rating:4.7,reviewCount:33},
+        ].filter(p => {
+          if(filters.category !== 'all' && p.category !== filters.category) return false;
+          if(filters.bestseller && !p.bestSeller) return false;
+          if(filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
+          return true;
+        });
+        document.getElementById('resultsCount').textContent = `${demo.length} products found`;
+        renderProductCards(demo, 'productsGrid');
+      }
+    }
+    initPage();
+
+    // Search
+    let searchTimer;
+    document.getElementById('searchInput').value = filters.search;
+    document.getElementById('searchInput').addEventListener('input', e => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { filters.search = e.target.value; loadProducts(); }, 400);
+    });
+
+    // Sort
+    document.getElementById('sortSelect').addEventListener('change', e => { filters.sortBy = e.target.value; loadProducts(); });
+
+    // Price range
+    document.getElementById('priceRange').addEventListener('input', e => {
+      filters.maxPrice = +e.target.value;
+      document.getElementById('priceLabel').textContent = filters.maxPrice >= 1000 ? '₹1000+' : `₹${filters.maxPrice}`;
+      loadProducts();
+    });
+
+    // Bestseller
+    document.getElementById('bestSellerFilter').addEventListener('change', e => { filters.bestseller = e.target.checked; loadProducts(); });
+
+    // Clear filters
+    document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+      filters = { category:'all', maxPrice:1000, search:'', sortBy:'', bestseller:false };
+      document.getElementById('searchInput').value = '';
+      document.getElementById('sortSelect').value = '';
+      document.getElementById('priceRange').value = 1000;
+      document.getElementById('priceLabel').textContent = '₹1000+';
+      document.getElementById('bestSellerFilter').checked = false;
+      document.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active',c.dataset.category==='all'));
+      loadProducts();
+    });
+
+    // Mobile filter drawer
+    document.getElementById('openFilterBtn').addEventListener('click',() => document.getElementById('filterDrawer').classList.add('open'));
+    document.getElementById('closeFilterBtn').addEventListener('click',() => document.getElementById('filterDrawer').classList.remove('open'));
+    document.getElementById('applyFilterBtn').addEventListener('click',() => { document.getElementById('filterDrawer').classList.remove('open'); loadProducts(); });
+    document.getElementById('filterDrawer').addEventListener('click',e=>{ if(e.target===document.getElementById('filterDrawer')) document.getElementById('filterDrawer').classList.remove('open'); });
+
+    // Hamburger
+    document.getElementById('hamburgerBtn')?.addEventListener('click', () => {});
+  </script>
+</body>
+</html>

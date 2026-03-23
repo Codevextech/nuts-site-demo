@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Register – NutriNuts</title>
+  <meta name="description" content="Sign in or create your NutriNuts account to track orders, save addresses, and manage your wishlist."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .auth-page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem 1.25rem; background:linear-gradient(135deg,var(--brown-dark) 0%,var(--brown) 60%,var(--brown-light) 100%); }
+    .auth-box { background:var(--white); border-radius:var(--radius-lg); padding:2.5rem 2rem; width:100%; max-width:440px; box-shadow:var(--shadow-lg); }
+    .auth-logo { text-align:center; margin-bottom:1.75rem; }
+    .auth-logo a { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700; color:var(--brown); }
+    .auth-logo a span { color:var(--green); }
+    .auth-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:1.75rem; }
+    .auth-tab { flex:1; padding:.7rem; text-align:center; background:none; border:none; font-size:.9rem; font-weight:600; color:var(--text-light); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:var(--transition); }
+    .auth-tab.active { color:var(--brown); border-bottom-color:var(--brown); }
+    .auth-panel { display:none; }
+    .auth-panel.active { display:block; }
+    .password-wrap { position:relative; }
+    .password-wrap .form-control { padding-right:2.8rem; }
+    .toggle-pwd { position:absolute; right:.85rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-light); cursor:pointer; font-size:1rem; }
+    .divider-or { display:flex; align-items:center; gap:.75rem; color:var(--text-light); font-size:.8rem; margin:1.25rem 0; }
+    .divider-or::before, .divider-or::after { content:''; flex:1; height:1px; background:var(--border); }
+    body { padding-bottom:0; }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo"><a href="index.html">🌰 Nutri<span>Nuts</span></a></div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" id="loginTabBtn">Login</button>
+        <button class="auth-tab" data-tab="register" id="registerTabBtn">Register</button>
+        <button class="auth-tab" data-tab="forgot" id="forgotTabBtn">Forgot?</button>
+      </div>
+
+      <!-- Login -->
+      <div class="auth-panel active" id="panel-login">
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input id="loginEmail" type="email" class="form-control" placeholder="you@example.com" required autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="password-wrap">
+              <input id="loginPassword" type="password" class="form-control" placeholder="••••••••" required autocomplete="current-password"/>
+              <button type="button" class="toggle-pwd" data-target="loginPassword"><i class="ri-eye-line"></i></button>
+            </div>
+          </div>
+          <div style="text-align:right;margin-bottom:1rem;"><button type="button" class="btn" style="padding:0;background:none;font-size:.8rem;color:var(--brown);" id="toLinkForgot">Forgot Password?</button></div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="loginBtn">Login <i class="ri-login-circle-line"></i></button>
+          <p id="loginError" style="color:#E53E3E;font-size:.8rem;margin-top:.75rem;text-align:center;display:none;"></p>
+        </form>
+        <div class="divider-or">or</div>
+        <p style="text-align:center;font-size:.85rem;color:var(--text-light);">Don't have an account? <button class="btn" style="padding:0;background:none;color:var(--brown);font-size:.85rem;font-weight:600;" id="toLinkRegister">Register now</button></p>
+      </div>
+
+      <!-- Register -->
+      <div class="auth-panel" id="panel-register">
+        <form id="registerForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Full Name <span style="color:#E53E3E">*</span></label>
+            <input id="regName" type="text" class="form-control" placeholder="Priya Sharma" required autocomplete="name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address <span style="color:#E53E3E">*</span></label>
+            <input id="regEmail" type="email" class="form-control" placeholder="you@example.com" required autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number <span style="color:#E53E3E">*</span></label>
+            <input id="regPhone" type="tel" class="form-control" placeholder="9876543210" required pattern="[0-9]{10}"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password <span style="color:#E53E3E">*</span></label>
+            <div class="password-wrap">
+              <input id="regPassword" type="password" class="form-control" placeholder="Min 6 characters" required minlength="6"/>
+              <button type="button" class="toggle-pwd" data-target="regPassword"><i class="ri-eye-line"></i></button>
+            </div>
+          </div>
+          <div style="font-size:.75rem;color:var(--text-light);margin-bottom:1rem;">By registering you agree to our Privacy Policy and Terms of Service.</div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="registerBtn">Create Account <i class="ri-user-add-line"></i></button>
+          <p id="regError" style="color:#E53E3E;font-size:.8rem;margin-top:.75rem;text-align:center;display:none;"></p>
+        </form>
+        <div class="divider-or">or</div>
+        <p style="text-align:center;font-size:.85rem;color:var(--text-light);">Already have an account? <button class="btn" style="padding:0;background:none;color:var(--brown);font-size:.85rem;font-weight:600;" id="toLinkLogin">Login</button></p>
+      </div>
+
+      <!-- Forgot Password -->
+      <div class="auth-panel" id="panel-forgot">
+        <p style="font-size:.875rem;color:var(--text-med);margin-bottom:1.5rem;">Enter your email and we'll send a password reset link.</p>
+        <form id="forgotForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input id="forgotEmail" type="email" class="form-control" placeholder="you@example.com" required/>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="forgotBtn">Send Reset Link <i class="ri-mail-send-line"></i></button>
+          <p id="forgotMsg" style="font-size:.8rem;margin-top:.75rem;text-align:center;display:none;"></p>
+        </form>
+        <div class="divider-or">or</div>
+        <p style="text-align:center;font-size:.85rem;color:var(--text-light);"><button class="btn" style="padding:0;background:none;color:var(--brown);font-size:.85rem;font-weight:600;" id="toLinkLogin2">Back to Login</button></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { register, login, forgotPassword, onAuthChange, initTheme } from './js/auth.js';
+    initTheme();
+
+    // Redirect if already logged in
+    onAuthChange(user => {
+      if (user) {
+        const redirect = new URLSearchParams(location.search).get('redirect') || 'dashboard.html';
+        window.location.href = redirect;
+      }
+    });
+
+    // Tab switching
+    function showTab(tab) {
+      document.querySelectorAll('.auth-tab,.auth-panel').forEach(el => el.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      document.getElementById(`panel-${tab}`).classList.add('active');
+    }
+    document.querySelectorAll('.auth-tab').forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
+    document.getElementById('toLinkRegister')?.addEventListener('click', () => showTab('register'));
+    document.getElementById('toLinkLogin')?.addEventListener('click', () => showTab('login'));
+    document.getElementById('toLinkLogin2')?.addEventListener('click', () => showTab('login'));
+    document.getElementById('toLinkForgot')?.addEventListener('click', () => showTab('forgot'));
+
+    // Password toggles
+    document.querySelectorAll('.toggle-pwd').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.innerHTML = isText ? '<i class="ri-eye-line"></i>' : '<i class="ri-eye-off-line"></i>';
+      });
+    });
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errEl = document.getElementById('loginError');
+      errEl.style.display = 'none';
+      btn.disabled = true; btn.textContent = 'Logging in…';
+      try {
+        await login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+        // redirect handled by onAuthChange
+      } catch(err) {
+        errEl.textContent = err.code === 'auth/invalid-credential' ? 'Invalid email or password.' : err.message.replace('Firebase: ','');
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.innerHTML = 'Login <i class="ri-login-circle-line"></i>';
+      }
+    });
+
+    // Register
+    document.getElementById('registerForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('registerBtn');
+      const errEl = document.getElementById('regError');
+      errEl.style.display = 'none';
+      if (!/^[0-9]{10}$/.test(document.getElementById('regPhone').value)) {
+        errEl.textContent = 'Enter a valid 10-digit phone number.';
+        errEl.style.display = 'block'; return;
+      }
+      btn.disabled = true; btn.textContent = 'Creating account…';
+      try {
+        await register(
+          document.getElementById('regName').value,
+          document.getElementById('regEmail').value,
+          document.getElementById('regPhone').value,
+          document.getElementById('regPassword').value
+        );
+        // redirect handled by onAuthChange
+      } catch(err) {
+        errEl.textContent = err.code === 'auth/email-already-in-use' ? 'Email already registered. Please login.' : err.message.replace('Firebase: ','');
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.innerHTML = 'Create Account <i class="ri-user-add-line"></i>';
+      }
+    });
+
+    // Forgot Password
+    document.getElementById('forgotForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('forgotBtn');
+      const msg = document.getElementById('forgotMsg');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        await forgotPassword(document.getElementById('forgotEmail').value);
+        msg.style.color = 'var(--green)';
+        msg.textContent = '✓ Reset link sent! Check your inbox (and spam folder).';
+        msg.style.display = 'block';
+      } catch(err) {
+        msg.style.color = '#E53E3E';
+        msg.textContent = 'Email not found. Please check and try again.';
+        msg.style.display = 'block';
+      }
+      btn.disabled = false; btn.innerHTML = 'Send Reset Link <i class="ri-mail-send-line"></i>';
+    });
+  </script>
+</body>
+</html>

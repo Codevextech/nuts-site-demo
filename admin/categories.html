@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Categories – Admin – NutriNuts</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body class="admin-layout">
+
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-nav-logo">🌰 Nutri<span>Nuts</span></div>
+    <div style="padding:0 1.25rem .5rem;"><span style="font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Menu</span></div>
+    <a href="index.html" class="admin-nav-item" id="nav-dashboard"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+    <a href="orders.html" class="admin-nav-item" id="nav-orders"><i class="ri-shopping-cart-2-line"></i> Orders</a>
+    <a href="products.html" class="admin-nav-item" id="nav-products"><i class="ri-store-2-line"></i> Products</a>
+    <a href="categories.html" class="admin-nav-item active" id="nav-categories"><i class="ri-function-line"></i> Categories</a>
+    <a href="customers.html" class="admin-nav-item" id="nav-customers"><i class="ri-group-line"></i> Customers</a>
+    <a href="coupons.html" class="admin-nav-item" id="nav-coupons"><i class="ri-ticket-2-line"></i> Coupons</a>
+    <a href="reviews.html" class="admin-nav-item" id="nav-reviews"><i class="ri-star-smile-line"></i> Reviews</a>
+    <a href="reports.html" class="admin-nav-item" id="nav-reports"><i class="ri-bar-chart-box-line"></i> Reports</a>
+    <div style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem;">
+      <a href="settings.html" class="admin-nav-item" id="nav-settings"><i class="ri-settings-4-line"></i> Settings</a>
+    </div>
+  </aside>
+
+  <main class="admin-main" id="adminMain">
+    <div class="admin-topbar">
+      <button class="nav-icon-btn" id="sidebarToggle"><i class="ri-menu-2-line"></i></button>
+      <div style="flex:1;"></div>
+      <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--brown-light);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">A</div>
+        <span style="font-size:.875rem;font-weight:600;" id="adminName">Admin</span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 style="font-size:1.6rem;margin-bottom:.25rem;">Categories</h1>
+          <p style="color:var(--text-light);font-size:.9rem;">Manage product categories displayed on home and shop pages.</p>
+        </div>
+        <div style="display:flex;gap:.75rem;">
+          <button class="btn btn-outline" id="seedBtn" title="Import categories from home page"><i class="ri-magic-line"></i> Seed Defaults</button>
+          <button class="btn btn-primary" id="addCategoryBtn"><i class="ri-add-line"></i> New Category</button>
+        </div>
+      </div>
+
+      <div class="card table-wrapper">
+        <table id="categoriesTable">
+          <thead>
+            <tr>
+              <th width="80">Image</th>
+              <th>Category Name</th>
+              <th>Slug (ID)</th>
+              <th>Description</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="categoriesBody">
+            <tr><td colspan="5" class="text-center" style="padding:2rem;"><div class="spinner" style="margin:0 auto 1rem;"></div>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="categoryModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Category</h3>
+        <button class="btn" style="padding:.25rem;background:none;font-size:1.2rem;" id="closeModalBtn"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="categoryForm">
+          <input type="hidden" id="cOriginalId"/>
+          
+          <div class="form-group">
+            <label class="form-label">Category Name <span style="color:#E53E3E">*</span></label>
+            <input type="text" id="cName" class="form-control" required/>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Slug (Used for URL & ID, no spaces) <span style="color:#E53E3E">*</span></label>
+            <input type="text" id="cSlug" class="form-control" required placeholder="e.g. green-raisins"/>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Short Description</label>
+            <textarea id="cDesc" class="form-control" rows="2"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Image URL</label>
+            <input type="url" id="cImage" class="form-control" placeholder="https://...jpg"/>
+          </div>
+
+          <div class="modal-footer" style="padding:1.5rem 0 0;border-top:1px solid var(--border);margin-top:1.5rem;display:flex;justify-content:flex-end;gap:1rem;">
+            <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveCategoryBtn">Save Category <i class="ri-save-line"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { collection, getDocs, doc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initAdmin } from './js/admin.js';
+    import { showToast } from '../js/auth.js';
+
+    let allCategories = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initAdmin();
+      await loadCategories();
+    });
+
+    async function loadCategories() {
+      const tbody = document.getElementById('categoriesBody');
+      try {
+        const snap = await getDocs(query(collection(db,'categories'), orderBy('name')));
+        allCategories = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderTable();
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-red">Error loading categories.</td></tr>';
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('categoriesBody');
+      if (!allCategories.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No categories found. Create one.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = allCategories.map(c => `
+        <tr>
+          <td><img src="${c.image||'https://images.unsplash.com/photo-1508313527902-1571d929be67?w=80&q=60'}" style="width:48px;height:48px;object-fit:cover;border-radius:var(--radius-sm);"/></td>
+          <td style="font-weight:600;">${c.name}</td>
+          <td style="font-family:monospace;color:var(--text-light);">${c.id}</td>
+          <td style="font-size:.85rem;color:var(--text-med);max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.description||'—'}</td>
+          <td class="text-right">
+            <button class="btn btn-outline btn-sm edit-btn" data-id="${c.id}" style="padding:.3rem .5rem;"><i class="ri-edit-line"></i></button>
+            <button class="btn btn-sm del-btn" data-id="${c.id}" style="padding:.3rem .5rem;background:#FEE2E2;color:#DC2626;border:none;"><i class="ri-delete-bin-line"></i></button>
+          </td>
+        </tr>`).join('');
+
+      document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', e => openModal(e.currentTarget.dataset.id)));
+      document.querySelectorAll('.del-btn').forEach(btn => btn.addEventListener('click', e => deleteCategory(e.currentTarget.dataset.id)));
+    }
+
+    // Modal
+    const modal = document.getElementById('categoryModal');
+    function closeModal() { modal.classList.remove('active'); document.getElementById('categoryForm').reset(); document.getElementById('cOriginalId').value=''; }
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelFormBtn').addEventListener('click', closeModal);
+
+    document.getElementById('addCategoryBtn').addEventListener('click', () => { 
+      document.getElementById('modalTitle').textContent='Add Category';
+      document.getElementById('cSlug').disabled = false;
+      modal.classList.add('active'); 
+    });
+
+    document.getElementById('seedBtn').addEventListener('click', seedDefaultCategories);
+
+    async function seedDefaultCategories() {
+      if(!confirm("This will add the 6 default categories (Almonds, Cashews, etc.) to your store if they don't exist. Continue?")) return;
+      const defaults = [
+        { id: 'almonds', name: 'Almonds', icon: '🌰', description: 'Premium California & Indian Almonds', image: 'https://images.unsplash.com/photo-1508313527902-1571d929be67?w=400&q=80' },
+        { id: 'cashews', name: 'Cashews', icon: '🥜', description: 'Whole & Split King-sized Cashew Nuts', image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80' },
+        { id: 'pistachios', name: 'Pistachios', icon: '💚', description: 'Salted & Roasted Iranian Pistachios', image: 'https://images.unsplash.com/photo-1519864600-ca20a5630e6c?w=400&q=80' },
+        { id: 'walnuts', name: 'Walnuts', icon: '🟤', description: 'Omega-rich Chilean Walnut Kernels', image: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80' },
+        { id: 'seeds', name: 'Seeds', icon: '🌱', description: 'Healthy Sunflower, Pumpkin & Flax Seeds', image: 'https://images.unsplash.com/photo-1515942400420-2b98fed1f515?w=400&q=80' },
+        { id: 'raisins', name: 'Raisins', icon: '🍇', description: 'Sweet Seedless Green & Black Raisins', image: 'https://images.unsplash.com/photo-1532661026021-ea1d9e2637bf?w=400&q=80' }
+      ];
+
+      try {
+        let count = 0;
+        for (const cat of defaults) {
+          const { id, ...data } = cat;
+          await setDoc(doc(db, 'categories', id), data, { merge: true });
+          count++;
+        }
+        showToast(`Successfully seeded ${count} categories!`, 'success');
+        loadCategories();
+      } catch(e) {
+        showToast('Error seeding categories.', 'error');
+      }
+    }
+
+    // auto-fill slug
+    document.getElementById('cName').addEventListener('input', e => {
+      if(!document.getElementById('cOriginalId').value) { // only if new
+        document.getElementById('cSlug').value = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+    });
+
+    function openModal(id) {
+      const c = allCategories.find(x=>x.id===id);
+      if(!c) return;
+      document.getElementById('modalTitle').textContent = 'Edit Category';
+      document.getElementById('cOriginalId').value = c.id;
+      document.getElementById('cSlug').value = c.id;
+      document.getElementById('cSlug').disabled = true; // prevent changing ID of existing doc easily
+      document.getElementById('cName').value = c.name;
+      document.getElementById('cDesc').value = c.description || '';
+      document.getElementById('cImage').value = c.image || '';
+      modal.classList.add('active');
+    }
+
+    document.getElementById('categoryForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('saveCategoryBtn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      const origId = document.getElementById('cOriginalId').value;
+      const id = document.getElementById('cSlug').value;
+      const data = {
+        name: document.getElementById('cName').value,
+        description: document.getElementById('cDesc').value,
+        image: document.getElementById('cImage').value || null
+      };
+
+      try {
+        await setDoc(doc(db,'categories',id), data, { merge:true });
+        if(origId && origId !== id) {
+          // If slug changed, delete old doc. (Disabled in UI currently, but logic exists)
+          await deleteDoc(doc(db,'categories',origId));
+        }
+        showToast('Category saved!', 'success');
+        closeModal();
+        loadCategories();
+      } catch(err) {
+        showToast('Error saving: '+err.message, 'error');
+      }
+      btn.disabled = false; btn.innerHTML = 'Save Category <i class="ri-save-line"></i>';
+    });
+
+    async function deleteCategory(id) {
+      if(!confirm(`Delete category "${id}"? Products referencing it may break filtering.`)) return;
+      try {
+        await deleteDoc(doc(db,'categories',id));
+        showToast('Category deleted.', 'success');
+        loadCategories();
+      } catch(e) { showToast('Error deleting.', 'error'); }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Confirmed! – NutriNuts</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .success-container { min-height:80vh; display:flex; align-items:center; justify-content:center; padding:2rem 1.25rem; }
+    .success-card { background:var(--white); border-radius:var(--radius-lg); padding:3rem 2rem; text-align:center; max-width:520px; width:100%; border:1px solid var(--border); box-shadow:var(--shadow-lg); }
+    .success-icon { width:96px; height:96px; border-radius:50%; background:linear-gradient(135deg,var(--green),var(--green-light)); color:#fff; font-size:3rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; animation:popIn .5s cubic-bezier(.4,0,.2,1); }
+    @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+    .confetti { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1000; overflow:hidden; }
+    .confetti-piece { position:absolute; width:10px; height:10px; opacity:0; animation:confettiFall linear forwards; border-radius:2px; }
+    @keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">🌰 Nutri<span>Nuts</span></a>
+    </div>
+  </nav>
+
+  <div class="confetti" id="confetti"></div>
+
+  <div class="success-container">
+    <div class="success-card">
+      <div class="success-icon"><i class="ri-checkbox-circle-fill"></i></div>
+      <h1 style="font-size:2rem;margin-bottom:.75rem;color:var(--green);">Order Confirmed!</h1>
+      <p style="color:var(--text-med);margin-bottom:1.5rem;">Thank you for your order! We've received it and will start processing it soon.</p>
+
+      <div style="background:var(--brown-50);border-radius:var(--radius-md);padding:1.25rem;border:1px solid var(--border);margin-bottom:1.5rem;text-align:left;">
+        <div class="summary-row" style="padding:.35rem 0;">
+          <span style="font-size:.82rem;color:var(--text-light);">Order ID</span>
+          <span style="font-size:.85rem;font-weight:700;color:var(--brown);font-family:monospace;" id="orderIdDisplay">---</span>
+        </div>
+        <div class="summary-row" style="padding:.35rem 0;">
+          <span style="font-size:.82rem;color:var(--text-light);">Payment</span>
+          <span id="paymentDisplay" class="badge badge-green" style="font-size:.75rem;"></span>
+        </div>
+        <div class="summary-row" style="padding:.35rem 0;">
+          <span style="font-size:.82rem;color:var(--text-light);">Status</span>
+          <span class="badge status-pending">Pending</span>
+        </div>
+        <div class="summary-row" style="padding:.35rem 0;">
+          <span style="font-size:.82rem;color:var(--text-light);">Expected Delivery</span>
+          <span style="font-size:.85rem;font-weight:600;" id="deliveryDate">---</span>
+        </div>
+      </div>
+
+      <p style="font-size:.85rem;color:var(--text-light);margin-bottom:2rem;">📧 You will receive an order confirmation on your registered email. You can also track your order in your dashboard.</p>
+
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <a href="dashboard.html#orders" class="btn btn-primary btn-lg btn-full"><i class="ri-file-list-3-line"></i> Track My Order</a>
+        <a href="products.html" class="btn btn-secondary btn-full">Continue Shopping</a>
+        <a href="https://wa.me/919999999999?text=I just placed order " id="waLink" class="btn btn-full" style="background:#25D366;color:#fff;" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> Chat on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script type="module">
+    import { initTheme } from './js/auth.js';
+    initTheme();
+
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('id') || '---';
+    const method = params.get('method') || 'cod';
+    const payId = params.get('pay') || '';
+
+    document.getElementById('orderIdDisplay').textContent = orderId;
+    document.getElementById('paymentDisplay').textContent = method === 'cod' ? 'Cash on Delivery' : `Online · ${payId.slice(0,12)}…`;
+
+    const delivery = new Date();
+    delivery.setDate(delivery.getDate() + 4);
+    document.getElementById('deliveryDate').textContent = delivery.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
+
+    document.getElementById('waLink').href = `https://wa.me/919999999999?text=I+just+placed+order+${orderId}+at+NutriNuts!`;
+
+    // Confetti
+    const confetti = document.getElementById('confetti');
+    const colors = ['#6B3F1F','#3A6B35','#D4A017','#C4914A','#5B9E54'];
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.cssText = `
+        left:${Math.random()*100}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${2+Math.random()*3}s;
+        animation-delay:${Math.random()*1.5}s;
+        width:${6+Math.random()*8}px;
+        height:${6+Math.random()*8}px;
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+      `;
+      confetti.appendChild(piece);
+    }
+    setTimeout(() => confetti.remove(), 6000);
+  </script>
+</body>
+</html>

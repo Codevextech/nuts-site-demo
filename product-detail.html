@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details – NutriNuts</title>
+  <meta name="description" content="View product details, health benefits, weight options and order premium dry fruits from NutriNuts."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .detail-grid { display:grid; gap:2rem; grid-template-columns:1fr; }
+    @media(min-width:768px){ .detail-grid { grid-template-columns:1fr 1fr; align-items:start; } }
+    .benefit-item { display:flex; align-items:flex-start; gap:.75rem; background:var(--green-50); border-radius:var(--radius-sm); padding:1rem; border:1px solid rgba(58,107,53,.15); }
+    .benefit-icon { font-size:1.4rem; flex-shrink:0; }
+    .qty-section { display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+    .tab-nav { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:1.5rem; }
+    .tab-btn { padding:.65rem 1.25rem; background:none; border:none; font-size:.875rem; font-weight:600; color:var(--text-light); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:var(--transition); }
+    .tab-btn.active { color:var(--brown); border-bottom-color:var(--brown); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .related-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+    @media(min-width:640px){ .related-grid { grid-template-columns:repeat(4,1fr); } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">🌰 Nutri<span>Nuts</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+        <a href="cart.html" class="nav-icon-btn"><i class="ri-shopping-cart-2-line"></i><span class="cart-badge" id="cart-badge" style="display:none">0</span></a>
+        <a href="auth.html" class="nav-icon-btn" id="nav-auth-link"><i class="ri-user-line"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a><span class="breadcrumb-sep">/</span>
+        <a href="products.html">Products</a><span class="breadcrumb-sep">/</span>
+        <span class="current" id="breadcrumbName">Loading…</span>
+      </div>
+
+      <div class="detail-grid" id="productDetail">
+        <div class="loading-overlay" style="grid-column:1/-1;"><div class="spinner"></div><p>Loading product…</p></div>
+      </div>
+
+      <!-- Tabs -->
+      <div style="margin-top:3rem;" id="tabsSection" class="card" style="padding:1.5rem;">
+        <div style="padding:1.5rem;">
+          <div class="tab-nav">
+            <button class="tab-btn active" data-tab="description">Description</button>
+            <button class="tab-btn" data-tab="benefits">Health Benefits</button>
+            <button class="tab-btn" data-tab="reviews">Reviews</button>
+          </div>
+          <div class="tab-panel active" id="tab-description" style="font-size:.9rem;color:var(--text-med);line-height:1.7;">
+            <p id="productDesc">Loading…</p>
+          </div>
+          <div class="tab-panel" id="tab-benefits">
+            <div id="benefitsList" style="display:flex;flex-direction:column;gap:.75rem;"></div>
+          </div>
+          <div class="tab-panel" id="tab-reviews">
+            <div id="reviewsList"></div>
+            <form id="reviewForm" style="margin-top:1.5rem;background:var(--primary-50);padding:1.5rem;border-radius:var(--radius-md);border:1px solid var(--border);">
+              <h4 style="margin-bottom:1.25rem;font-size:1.1rem;font-weight:700;">Write a Review</h4>
+              <div class="form-group">
+                <label class="form-label">Your Rating</label>
+                <div id="starPicker" style="display:flex;gap:.4rem;font-size:1.5rem;cursor:pointer;">
+                  <span data-val="1">☆</span><span data-val="2">☆</span><span data-val="3">☆</span><span data-val="4">☆</span><span data-val="5">☆</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Your Review</label>
+                <textarea id="reviewText" class="form-control" rows="3" placeholder="Share your experience…"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div style="margin-top:3rem;">
+        <div class="section-header" style="text-align:left;margin-bottom:1.25rem;"><h2 style="font-size:1.4rem;">Related Products</h2></div>
+        <div class="related-grid" id="relatedGrid"><div class="loading-overlay"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <a href="https://wa.me/919999999999" class="whatsapp-float" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i></a>
+  <div id="toast-container"></div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="bottom-nav-item"><i class="ri-home-5-line"></i><span>Home</span></a>
+    <a href="products.html" class="bottom-nav-item active"><i class="ri-store-2-line"></i><span>Shop</span></a>
+    <a href="cart.html" class="bottom-nav-item"><i class="ri-shopping-cart-2-line"></i><span class="bottom-nav-badge" data-cart style="display:none">0</span><span>Cart</span></a>
+    <a href="dashboard.html" class="bottom-nav-item"><i class="ri-user-line"></i><span>Account</span></a>
+  </nav>
+
+  <script type="module">
+    import { initNavAuth, initTheme, showToast } from './js/auth.js';
+    import { fetchProduct, fetchProducts, renderProductCards, renderStars } from './js/products.js';
+    import { addToCart, toggleWishlist, isWishlisted, updateCartBadge } from './js/cart.js';
+    import { db, auth } from './js/firebase-config.js';
+    import { collection, addDoc, getDocs, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    initTheme(); initNavAuth(); updateCartBadge();
+
+    const productId = new URLSearchParams(location.search).get('id');
+    let currentProduct = null;
+    let selectedWeight = '250g';
+    let selectedQty = 1;
+    let selectedRating = 0;
+
+    // Demo product fallback
+    const DEMO = {
+      id:'1', name:'California Almonds',category:'Almonds',
+      images:['https://images.unsplash.com/photo-1508313527902-1571d929be67?w=800&q=80','https://images.unsplash.com/photo-1569419397437-52bc00e63ac9?w=400&q=80','https://images.unsplash.com/photo-1543218024-57a70143c369?w=400&q=80'],
+      prices:{'250g':299,'500g':549,'1kg':999},
+      originalPrice:350, rating:4.8, reviewCount:142, bestSeller:true, stock:50,
+      description:'Premium California almonds — raw, unprocessed, and packed with natural goodness. Sourced directly from the finest almond orchards, these almonds are perfect for daily snacking, baking, or adding to smoothies. Rich in Vitamin E, magnesium, and healthy fats.',
+      benefits:['Rich in Vitamin E – great for skin & immunity','High in healthy monounsaturated fats – heart healthy','Excellent source of magnesium – supports muscle function','Boosts brain health and memory','High protein content – great post-workout snack']
+    };
+
+    async function loadProduct() {
+      try {
+        currentProduct = productId ? await fetchProduct(productId) : null;
+        if(!currentProduct) currentProduct = DEMO;
+      } catch(e) { currentProduct = DEMO; }
+      renderDetail(currentProduct);
+      loadRelated(currentProduct.category);
+      loadReviews(currentProduct.id);
+    }
+
+    function renderDetail(p) {
+      document.title = `${p.name} – NutriNuts`;
+      document.getElementById('breadcrumbName').textContent = p.name;
+      document.getElementById('productDesc').textContent = p.description || '';
+
+      // Benefits
+      const benefits = p.benefits || DEMO.benefits;
+      document.getElementById('benefitsList').innerHTML = benefits.map(b=>`
+        <div class="benefit-item"><span class="benefit-icon">✅</span><p style="font-size:.875rem;color:var(--text-med);margin:0;">${b}</p></div>`).join('');
+
+      const weights = Object.keys(p.prices || {'250g':0});
+      selectedWeight = weights[0];
+
+      document.getElementById('productDetail').innerHTML = `
+        <div>
+          <div class="gallery-main"><img id="mainImg" src="${p.images?.[0]||'https://images.unsplash.com/photo-1508313527902-1571d929be67?w=800&q=80'}" alt="${p.name}"/></div>
+          <div class="gallery-thumbs" id="thumbs">
+            ${(p.images||[]).map((img,i)=>`<div class="gallery-thumb ${i===0?'active':''}" data-img="${img}"><img src="${img}" alt="View ${i+1}"/></div>`).join('')}
+          </div>
+        </div>
+        <div>
+          ${p.bestSeller?'<span class="badge badge-green" style="margin-bottom:.75rem;"><i class="ri-fire-fill"></i> Best Seller</span>':''}
+          <h1 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:.5rem;">${p.name}</h1>
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+            <div class="stars">${renderStars(p.rating||0)}</div>
+            <span style="color:var(--text-light);font-size:.85rem;">${p.rating||0} (${p.reviewCount||0} reviews)</span>
+          </div>
+          <hr class="divider"/>
+          <p style="font-size:.9rem;color:var(--text-light);margin-bottom:1.25rem;">Choose Weight:</p>
+          <div class="weight-options" id="weightBtns">
+            ${weights.map((w,i)=>`<button class="weight-btn ${i===0?'active':''}" data-weight="${w}">${w}</button>`).join('')}
+          </div>
+          <div style="margin:1.25rem 0;">
+            <div style="display:flex;align-items:baseline;gap:.75rem;">
+              <span style="font-size:2rem;font-weight:800;color:var(--brown);" id="currentPrice">₹${p.prices?.[selectedWeight]||0}</span>
+              ${p.originalPrice?`<span style="font-size:1rem;color:var(--text-light);text-decoration:line-through;">₹${p.originalPrice}</span>`:''}
+            </div>
+            <p style="font-size:.78rem;color:var(--text-light);" id="priceNote">Price for ${selectedWeight}</p>
+          </div>
+          <div class="qty-section" style="margin-bottom:1.5rem;">
+            <p style="font-size:.85rem;font-weight:600;color:var(--text-med);">Quantity:</p>
+            <div class="qty-control">
+              <button class="qty-btn" id="qtyMinus">−</button>
+              <span class="qty-value" id="qtyValue">1</span>
+              <button class="qty-btn" id="qtyPlus">+</button>
+            </div>
+            <span style="font-size:.8rem;color:${p.stock<10?'#E53E3E':'var(--green)'};">
+              ${p.stock<10?`⚠️ Only ${p.stock} left`:'✓ In Stock'}
+            </span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <button class="btn btn-green btn-lg btn-full" id="addCartBtn"><i class="ri-shopping-cart-2-line"></i> Add to Cart</button>
+            <button class="btn btn-primary btn-lg btn-full" id="buyNowBtn"><i class="ri-zap-line"></i> Buy Now</button>
+          </div>
+          <div style="display:flex;gap:1rem;margin-top:1rem;">
+            <button class="btn btn-outline btn-sm" id="wishlistBtn">
+              <i class="ri-heart-${isWishlisted(p.id)?'fill':'line'}"></i>
+              ${isWishlisted(p.id)?'Wishlisted':'Add to Wishlist'}
+            </button>
+            <a href="https://wa.me/919999999999?text=I want to order ${encodeURIComponent(p.name)} ${selectedWeight}" class="btn btn-sm" style="background:#25D366;color:#fff;font-weight:600;" target="_blank"><i class="ri-whatsapp-line"></i> WhatsApp Order</a>
+          </div>
+          <div style="margin-top:1.5rem;padding:1.25rem;background:var(--primary-50);border-radius:var(--radius-md);border:1px solid var(--border);">
+            <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+              <span style="font-size:.85rem;font-weight:500;color:var(--text-med);"><i class="ri-truck-line" style="color:var(--primary);"></i> Free delivery above ₹499</span>
+              <span style="font-size:.85rem;font-weight:500;color:var(--text-med);"><i class="ri-loop-left-line" style="color:var(--primary);"></i> Easy 7-day returns</span>
+              <span style="font-size:.85rem;font-weight:500;color:var(--text-med);"><i class="ri-shield-check-line" style="color:var(--primary);"></i> 100% genuine</span>
+            </div>
+          </div>
+        </div>`;
+
+      // Bind gallery thumbs
+      document.querySelectorAll('.gallery-thumb').forEach(th=>{
+        th.addEventListener('click',()=>{
+          document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active'));
+          th.classList.add('active');
+          document.getElementById('mainImg').src = th.dataset.img;
+        });
+      });
+
+      // Weight selection
+      document.querySelectorAll('#weightBtns .weight-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('#weightBtns .weight-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedWeight = btn.dataset.weight;
+          document.getElementById('currentPrice').textContent = `₹${p.prices[selectedWeight]||0}`;
+          document.getElementById('priceNote').textContent = `Price for ${selectedWeight}`;
+        });
+      });
+
+      // Qty
+      document.getElementById('qtyMinus').addEventListener('click',()=>{ selectedQty=Math.max(1,selectedQty-1); document.getElementById('qtyValue').textContent=selectedQty; });
+      document.getElementById('qtyPlus').addEventListener('click',()=>{ selectedQty=Math.min(10,selectedQty+1); document.getElementById('qtyValue').textContent=selectedQty; });
+
+      // Add to cart
+      document.getElementById('addCartBtn').addEventListener('click',()=>{
+        if (addToCart(p, selectedWeight, selectedQty)) {
+          showToast(`${p.name} (${selectedWeight} × ${selectedQty}) added to cart 🛒`);
+          updateCartBadge();
+        }
+      });
+
+      // Buy now
+      document.getElementById('buyNowBtn').addEventListener('click',()=>{
+        if (addToCart(p, selectedWeight, selectedQty)) {
+          window.location.href='cart.html';
+        }
+      });
+
+      // Wishlist
+      document.getElementById('wishlistBtn').addEventListener('click',()=>{
+        const added = toggleWishlist(p.id);
+        document.getElementById('wishlistBtn').innerHTML = `<i class="ri-heart-${added?'fill':'line'}"></i> ${added?'Wishlisted':'Add to Wishlist'}`;
+        showToast(added?'Added to wishlist ❤️':'Removed from wishlist','info');
+      });
+    }
+
+    async function loadRelated(category) {
+      try {
+        const prods = await fetchProducts({ category, limitCount:4 });
+        const filtered = prods.filter(p=>p.id!==productId).slice(0,4);
+        if(filtered.length) { const {renderProductCards} = await import('./js/products.js'); renderProductCards(filtered,'relatedGrid'); return; }
+      } catch(e){}
+      document.getElementById('relatedGrid').innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;text-align:center;padding:2rem;">No related products found.</p>';
+    }
+
+    async function loadReviews(pid) {
+      try {
+        const snap = await getDocs(query(collection(db,'reviews'),where('productId','==',pid),orderBy('createdAt','desc')));
+        const reviews = snap.docs.map(d=>({id:d.id,...d.data()}));
+        document.getElementById('reviewsList').innerHTML = reviews.length
+          ? reviews.map(r=>`<div class="review-card" style="margin-bottom:.85rem;"><div class="review-header"><div class="review-avatar">${r.name?.[0]||'?'}</div><div><p class="review-name">${r.name||'Anonymous'}</p><p class="review-date">${r.createdAt?.toDate?.().toLocaleDateString('en-IN')||''}</p></div><div class="stars" style="margin-left:auto">${'★'.repeat(r.rating||0)}${'☆'.repeat(5-(r.rating||0))}</div></div><p class="review-text">${r.comment||''}</p></div>`).join('')
+          : '<p style="color:var(--text-light);font-size:.875rem;">No reviews yet. Be the first to review!</p>';
+      } catch(e) {
+        document.getElementById('reviewsList').innerHTML = '<p style="color:var(--text-light);font-size:.875rem;">Reviews unavailable offline. Configure Firebase to see reviews.</p>';
+      }
+    }
+
+    // Star picker
+    document.querySelectorAll('#starPicker span').forEach(s=>{
+      s.addEventListener('click',()=>{
+        selectedRating = +s.dataset.val;
+        document.querySelectorAll('#starPicker span').forEach((x,i)=>x.textContent=i<selectedRating?'★':'☆');
+      });
+    });
+
+    // Review form
+    document.getElementById('reviewForm').addEventListener('submit',async e=>{
+      e.preventDefault();
+      if(!selectedRating){ showToast('Please select a rating','error'); return; }
+      const user = auth.currentUser;
+      if(!user){ showToast('Please login to write a review','error'); return; }
+      try {
+        await addDoc(collection(db,'reviews'),{
+          productId: currentProduct.id, userId:user.uid,
+          name: user.displayName||'Customer', rating:selectedRating,
+          comment:document.getElementById('reviewText').value,
+          createdAt:serverTimestamp()
+        });
+        showToast('Review submitted! Thank you ⭐');
+        document.getElementById('reviewForm').reset();
+        selectedRating=0;
+        document.querySelectorAll('#starPicker span').forEach(x=>x.textContent='☆');
+        loadReviews(currentProduct.id);
+      } catch(err){ showToast('Error submitting review','error'); }
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    loadProduct();
+  </script>
+</body>
+</html>

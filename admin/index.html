@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – NutriNuts</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>
+    .stat-grid { display:grid; gap:1.5rem; grid-template-columns:1fr; }
+    @media(min-width:640px) { .stat-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(min-width:1024px){ .stat-grid { grid-template-columns:repeat(4,1fr); } }
+  </style>
+</head>
+<body class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-nav-logo">🌰 Nutri<span>Nuts</span></div>
+    <div style="padding:0 1.25rem .5rem;"><span style="font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Menu</span></div>
+    <a href="index.html" class="admin-nav-item active" id="nav-dashboard"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+    <a href="orders.html" class="admin-nav-item" id="nav-orders"><i class="ri-shopping-cart-2-line"></i> Orders</a>
+    <a href="products.html" class="admin-nav-item" id="nav-products"><i class="ri-store-2-line"></i> Products</a>
+    <a href="categories.html" class="admin-nav-item" id="nav-categories"><i class="ri-function-line"></i> Categories</a>
+    <a href="customers.html" class="admin-nav-item" id="nav-customers"><i class="ri-group-line"></i> Customers</a>
+    <a href="coupons.html" class="admin-nav-item" id="nav-coupons"><i class="ri-ticket-2-line"></i> Coupons</a>
+    <a href="reviews.html" class="admin-nav-item" id="nav-reviews"><i class="ri-star-smile-line"></i> Reviews</a>
+    <a href="reports.html" class="admin-nav-item" id="nav-reports"><i class="ri-bar-chart-box-line"></i> Reports</a>
+    <div style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem;">
+      <a href="settings.html" class="admin-nav-item" id="nav-settings"><i class="ri-settings-4-line"></i> Settings</a>
+      <a href="#" class="admin-nav-item" id="logoutBtn" style="color:#FCA5A5;"><i class="ri-logout-circle-line"></i> Logout</a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main" id="adminMain">
+    <div class="admin-topbar">
+      <button class="nav-icon-btn" id="sidebarToggle"><i class="ri-menu-2-line"></i></button>
+      <div style="flex:1;"></div>
+      <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--brown-light);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">A</div>
+        <span style="font-size:.875rem;font-weight:600;" id="adminName">Admin</span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h1 style="font-size:1.6rem;margin-bottom:.25rem;">Dashboard Overview</h1>
+          <p style="color:var(--text-light);font-size:.9rem;">Welcome back! Here's what's happening with your store today.</p>
+        </div>
+        <a href="../index.html" class="btn btn-outline btn-sm" target="_blank"><i class="ri-external-link-line"></i> View Store</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid" style="margin-bottom:2rem;">
+        <div class="stat-card">
+          <div class="stat-icon brown"><i class="ri-shopping-cart-2-line"></i></div>
+          <div><div class="stat-value" id="statTotalOrders">...</div><div class="stat-label">Total Orders</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="ri-money-rupee-circle-line"></i></div>
+          <div><div class="stat-value" id="statRevenue">...</div><div class="stat-label">Total Revenue</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><i class="ri-store-2-line"></i></div>
+          <div><div class="stat-value" id="statProducts">...</div><div class="stat-label">Total Products</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="ri-group-line"></i></div>
+          <div><div class="stat-value" id="statCustomers">...</div><div class="stat-label">Total Customers</div></div>
+        </div>
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);">
+          <h3 style="font-size:1.1rem;">Recent Orders</h3>
+          <a href="orders.html" class="btn btn-secondary btn-sm">View All</a>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentOrdersBody">
+              <tr><td colspan="5" class="text-center" style="padding:2rem;"><div class="spinner" style="margin:0 auto 1rem;"></div>Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { auth } from '../js/firebase-config.js';
+    import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { initAdmin, loadDashboardStats } from './js/admin.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Check auth and initialize layout
+      try {
+        await initAdmin();
+        // 2. Fetch data
+        await loadDashboardStats();
+      } catch(e) { /* Redirect handled in auth mod */ }
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await signOut(auth);
+        window.location.href = '../admin-login.html';
+      });
+    });
+  </script>
+</body>
+</html>

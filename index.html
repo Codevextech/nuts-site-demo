@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriNuts – Premium Organic Dry Fruits & Nuts Shop</title>
+  <meta name="description"
+    content="Buy fresh, premium quality dry fruits & nuts online. Almonds, Cashews, Pistachios, Walnuts and more. Free delivery on orders above ₹499." />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .hero {
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .offer-bar {
+      background: var(--green);
+      color: #fff;
+      text-align: center;
+      padding: .55rem 1rem;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    .offer-bar a {
+      color: #fff;
+      text-decoration: underline;
+      margin-left: .5rem;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .trust-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1.25rem;
+      background: var(--primary-50);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .trust-item i {
+      font-size: 1.6rem;
+      color: var(--green);
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .hero-stat span {
+      font-size: .8rem;
+      opacity: .8;
+    }
+
+    .slider-section {
+      overflow: hidden;
+      padding: 3rem 0;
+    }
+
+    .slider-track {
+      display: flex;
+      gap: 1.25rem;
+      animation: scroll-x 30s linear infinite;
+    }
+
+    @keyframes scroll-x {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    .slider-section:hover .slider-track {
+      animation-play-state: paused;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Offer Bar -->
+  <div class="offer-bar" id="offerBar">
+    🎉 Use code <strong>WELCOME10</strong> for 10% OFF on your first order!
+    <a href="products.html">Shop Now →</a>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">🌰 Nutri<span>Nuts</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"><i
+            class="ri-moon-line"></i></button>
+        <a href="products.html?search=" class="nav-icon-btn" aria-label="Search"><i class="ri-search-line"></i></a>
+        <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+          <i class="ri-shopping-cart-2-line"></i>
+          <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+        </a>
+        <a href="auth.html" class="nav-icon-btn" id="nav-auth-link" aria-label="Account"><i
+            class="ri-user-line"></i></a>
+        <button class="nav-icon-btn hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <div class="mobile-menu-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <span class="nav-logo">🌰 Nutri<span>Nuts</span></span>
+        <button class="nav-icon-btn" id="closeMenu" aria-label="Close menu"><i class="ri-close-line"></i></button>
+      </div>
+      <a href="index.html" class="mobile-nav-item"><i class="ri-home-5-line"></i> Home</a>
+      <a href="products.html" class="mobile-nav-item"><i class="ri-store-2-line"></i> Products</a>
+      <a href="cart.html" class="mobile-nav-item"><i class="ri-shopping-cart-2-line"></i> Cart</a>
+      <a href="dashboard.html" class="mobile-nav-item"><i class="ri-user-line"></i> My Account</a>
+      <a href="about.html" class="mobile-nav-item"><i class="ri-information-line"></i> About</a>
+      <a href="contact.html" class="mobile-nav-item"><i class="ri-phone-line"></i> Contact</a>
+      <hr class="divider" />
+      <a href="admin-login.html" class="mobile-nav-item" style="font-size:.8rem;opacity:.6;"><i
+          class="ri-shield-keyhole-line"></i> Admin Login</a>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div
+      style="position:relative;z-index:1;width:100%;max-width:700px;margin:0 auto;padding:0 1.25rem;text-align:center;">
+      <div class="hero-badge"><i class="ri-leaf-line"></i> 100% Organic & Natural</div>
+      <h1 id="hero-heading">Farm Fresh Nuts &amp;<br>Dry Fruits Delivered</h1>
+      <p>Premium quality almonds, cashews, pistachios &amp; more — directly from the finest farms across India.</p>
+      <div class="hero-btns">
+        <a href="products.html" class="btn btn-outline-white btn-lg">Shop Now <i class="ri-arrow-right-line"></i></a>
+        <a href="about.html" class="btn btn-outline-white" style="background:rgba(255,255,255,.12);">Our Story</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>10K+</strong><span>Happy Customers</span></div>
+        <div class="hero-stat"><strong>50+</strong><span>Premium Products</span></div>
+        <div class="hero-stat"><strong>4.9★</strong><span>Average Rating</span></div>
+        <div class="hero-stat"><strong>100%</strong><span>Natural &amp; Fresh</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Bar -->
+  <div class="trust-bar">
+    <div class="trust-item"><i class="ri-truck-line"></i> Free Delivery above ₹499</div>
+    <div class="trust-item"><i class="ri-leaf-line"></i> 100% Natural &amp; Fresh</div>
+    <div class="trust-item"><i class="ri-shield-check-line"></i> Secure Payments</div>
+    <div class="trust-item"><i class="ri-loop-left-line"></i> Easy Returns</div>
+    <div class="trust-item"><i class="ri-customer-service-2-line"></i> 24/7 Support</div>
+  </div>
+
+  <!-- Categories -->
+  <section class="section" aria-labelledby="categories-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Browse By Category</div>
+        <h2 id="categories-heading">Shop Your Favourites</h2>
+        <p>Handpicked selection of premium nuts, seeds, and dry fruits for every taste and need.</p>
+      </div>
+      <div class="category-grid" id="categoriesGrid">
+        <a href="products.html?category=Almonds" class="category-card"><span class="category-icon">🌰</span>
+          <h3>Almonds</h3>
+          <p>12 products</p>
+        </a>
+        <a href="products.html?category=Cashews" class="category-card"><span class="category-icon">🥜</span>
+          <h3>Cashews</h3>
+          <p>8 products</p>
+        </a>
+        <a href="products.html?category=Pistachios" class="category-card"><span class="category-icon">💚</span>
+          <h3>Pistachios</h3>
+          <p>6 products</p>
+        </a>
+        <a href="products.html?category=Walnuts" class="category-card"><span class="category-icon">🟤</span>
+          <h3>Walnuts</h3>
+          <p>5 products</p>
+        </a>
+        <a href="products.html?category=Seeds" class="category-card"><span class="category-icon">🌱</span>
+          <h3>Seeds</h3>
+          <p>10 products</p>
+        </a>
+        <a href="products.html?category=Raisins" class="category-card"><span class="category-icon">🍇</span>
+          <h3>Raisins</h3>
+          <p>7 products</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best Sellers -->
+  <section class="section"
+    style="background:var(--primary-50);border-top:1px solid var(--border);border-bottom:1px solid var(--border);"
+    aria-labelledby="bestsellers-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">⭐ Best Sellers</div>
+        <h2 id="bestsellers-heading">Most Loved Products</h2>
+        <p>Our customers can't get enough of these premium dry fruits — and we understand why.</p>
+      </div>
+      <div class="product-grid" id="bestSellersGrid">
+        <div class="loading-overlay" style="grid-column:1/-1;">
+          <div class="spinner"></div>
+          <p>Loading products…</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:2rem;">
+        <a href="products.html" class="btn btn-outline">View All Products <i class="ri-arrow-right-line"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section class="section" aria-labelledby="why-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Why NutriNuts</div>
+        <h2 id="why-heading">Pure. Fresh. Trusted.</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
+        <div class="card" style="padding:1.75rem;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">🌿</div>
+          <h3 style="font-size:1rem;margin-bottom:.5rem;">Farm Direct</h3>
+          <p style="font-size:.85rem;color:var(--text-light);">Sourced directly from certified farms — no middlemen,
+            maximum freshness.</p>
+        </div>
+        <div class="card" style="padding:1.75rem;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">🔬</div>
+          <h3 style="font-size:1rem;margin-bottom:.5rem;">Quality Tested</h3>
+          <p style="font-size:.85rem;color:var(--text-light);">Every batch undergoes strict quality checks before
+            reaching your doorstep.</p>
+        </div>
+        <div class="card" style="padding:1.75rem;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📦</div>
+          <h3 style="font-size:1rem;margin-bottom:.5rem;">Hygienic Packing</h3>
+          <p style="font-size:.85rem;color:var(--text-light);">Sealed in food-grade packaging to preserve freshness and
+            nutrients.</p>
+        </div>
+        <div class="card" style="padding:1.75rem;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">🚀</div>
+          <h3 style="font-size:1rem;margin-bottom:.5rem;">Swift Delivery</h3>
+          <p style="font-size:.85rem;color:var(--text-light);">Delivered within 2-4 business days across India.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section class="section" style="background:var(--green-50);border-top:1px solid rgba(58,107,53,.15);"
+    aria-labelledby="reviews-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Customer Reviews</div>
+        <h2 id="reviews-heading">What Our Customers Say</h2>
+        <p>Join thousands of happy customers who trust NutriNuts for their daily health needs.</p>
+      </div>
+      <div class="reviews-grid" id="reviewsGrid">
+        <!-- Static reviews shown as defaults; real reviews loaded from Firestore -->
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">P</div>
+            <div>
+              <p class="review-name">Priya Sharma</p>
+              <p class="review-date">March 2025</p>
+            </div>
+            <div class="stars" style="margin-left:auto">★★★★★</div>
+          </div>
+          <p class="review-text">"The almonds and cashews are absolutely fresh! You can taste the quality difference.
+            Will definitely order again."</p>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:linear-gradient(135deg,var(--green),var(--green-light))">R
+            </div>
+            <div>
+              <p class="review-name">Rahul Mehta</p>
+              <p class="review-date">February 2025</p>
+            </div>
+            <div class="stars" style="margin-left:auto">★★★★★</div>
+          </div>
+          <p class="review-text">"Great packaging, super fast delivery. The pistachios were so flavorful. Best dry
+            fruits shop online!"</p>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:linear-gradient(135deg,#8B5E3C,#C4914A)">A</div>
+            <div>
+              <p class="review-name">Anitha Reddy</p>
+              <p class="review-date">January 2025</p>
+            </div>
+            <div class="stars" style="margin-left:auto">★★★★☆</div>
+          </div>
+          <p class="review-text">"Ordered the 1kg almond pack for the family. Quality is top-notch. Delivery was prompt.
+            Highly recommend!"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="section" style="background:var(--brown);color:#fff;text-align:center;"
+    aria-labelledby="newsletter-heading">
+    <div class="container" style="max-width:580px;">
+      <h2 id="newsletter-heading" style="color:#fff;margin-bottom:.75rem;">Stay in the Loop 🌰</h2>
+      <p style="opacity:.85;margin-bottom:1.5rem;">Subscribe for exclusive deals, seasonal offers and healthy recipe
+        ideas.</p>
+      <form id="newsletterForm" style="display:flex;gap:.75rem;max-width:420px;margin:0 auto;"
+        onsubmit="handleNewsletter(event)">
+        <input type="email" class="form-control" placeholder="Your email address" required
+          style="border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;flex:1;" />
+        <button type="submit" class="btn btn-green" style="flex-shrink:0;">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>🌰 NutriNuts</h3>
+        <p>Premium organic dry fruits and nuts delivered fresh to your doorstep. Quality you can taste, freshness you
+          can feel.</p>
+        <div class="footer-social">
+          <a href="#" class="social-btn" aria-label="Facebook"><i class="ri-facebook-fill"></i></a>
+          <a href="#" class="social-btn" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+          <a href="#" class="social-btn" aria-label="Twitter"><i class="ri-twitter-x-line"></i></a>
+          <a href="https://wa.me/919999999999" class="social-btn" aria-label="WhatsApp"><i
+              class="ri-whatsapp-line"></i></a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-heading">Quick Links</p>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">Customer</p>
+        <ul class="footer-links">
+          <li><a href="auth.html">Login / Register</a></li>
+          <li><a href="dashboard.html">My Orders</a></li>
+          <li><a href="cart.html">Cart</a></li>
+          <li><a href="dashboard.html#wishlist">Wishlist</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">Contact Us</p>
+        <ul class="footer-links">
+          <li><a href="tel:+919999999999"><i class="ri-phone-line"></i> +91 99999 99999</a></li>
+          <li><a href="mailto:hello@nutrinuts.in"><i class="ri-mail-line"></i> hello@nutrinuts.in</a></li>
+          <li><a href="https://wa.me/919999999999"><i class="ri-whatsapp-line"></i> WhatsApp</a></li>
+          <li><a href="contact.html"><i class="ri-map-pin-2-line"></i> Find Our Store</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 NutriNuts. All rights reserved.</span>
+      <span>Made with ❤️ for nut lovers</span>
+    </div>
+  </footer>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <a href="index.html" class="bottom-nav-item active"><i class="ri-home-5-fill"></i><span>Home</span></a>
+    <a href="products.html" class="bottom-nav-item"><i class="ri-store-2-line"></i><span>Shop</span></a>
+    <a href="cart.html" class="bottom-nav-item" style="position:relative;">
+      <i class="ri-shopping-cart-2-line"></i>
+      <span class="bottom-nav-badge" id="cart-badge-mob" data-cart style="display:none">0</span>
+      <span>Cart</span>
+    </a>
+    <a href="dashboard.html" class="bottom-nav-item"><i class="ri-user-line"></i><span>Account</span></a>
+  </nav>
+
+  <!-- WhatsApp Float -->
+  <a href="https://wa.me/919999999999?text=Hi!%20I%20want%20to%20order%20from%20NutriNuts." class="whatsapp-float"
+    target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <i class="ri-whatsapp-line"></i>
+  </a>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initNavAuth, initTheme, showToast } from './js/auth.js';
+    import { fetchProducts, renderProductCards } from './js/products.js';
+    import { updateCartBadge } from './js/cart.js';
+
+    initTheme();
+    initNavAuth();
+    updateCartBadge();
+
+    // Hamburger menu
+    const ham = document.getElementById('hamburgerBtn');
+    const menu = document.getElementById('mobileMenu');
+    const close = document.getElementById('closeMenu');
+    ham.addEventListener('click', () => { menu.classList.add('open'); ham.setAttribute('aria-expanded', 'true'); });
+    close.addEventListener('click', () => { menu.classList.remove('open'); ham.setAttribute('aria-expanded', 'false'); });
+    menu.addEventListener('click', e => { if (e.target === menu) menu.classList.remove('open'); });
+
+    // Load best sellers
+    async function loadBestSellers() {
+      try {
+        let products = await fetchProducts({ bestseller: true, limitCount: 8 });
+        
+        // If no bestsellers marked, just show recent products
+        if (!products.length) {
+          products = await fetchProducts({ limitCount: 8 });
+        }
+
+        if (products.length) {
+          renderProductCards(products, 'bestSellersGrid');
+        } else {
+          // Show placeholder cards only if no products in Firebase yet
+          document.getElementById('bestSellersGrid').innerHTML = ['California Almonds', 'Premium Cashews', 'Pista Roasted', 'Walnut Kernels'].map((name, i) => `
+            <div class="product-card" style="cursor:pointer;" onclick="window.location.href='products.html'">
+              <div class="product-card-img">
+                <img src="https://images.unsplash.com/photo-${['1508313527902-1571d929be67', '1547592180-85f173990554', '1519864600-ca20a5630e6c', '1580910051074-3eb694886505'][i]}?w=400&q=80" alt="${name}" loading="lazy"/>
+                <span class="product-badge">Best Seller</span>
+              </div>
+              <div class="product-card-body">
+                <p class="product-category-tag">Nuts</p>
+                <h3 class="product-name">${name}</h3>
+                <div class="product-rating">★★★★★ <span>(124)</span></div>
+                <div class="product-price"><span class="price-current">₹${[299, 249, 349, 299][i]}</span><span class="price-unit">/ 250g</span></div>
+                <div class="product-card-footer">
+                  <button class="add-cart-btn" onclick="event.stopPropagation()"><i class="ri-shopping-cart-2-line"></i> Add to Cart</button>
+                </div>
+              </div>
+            </div>`).join('');
+        }
+      } catch (err) {
+        console.warn('Products load error:', err.message);
+        document.getElementById('bestSellersGrid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="ri-wifi-off-line"></i><h3>Unable to load products</h3><p>Please configure Firebase to see live products.</p></div>`;
+      }
+    }
+    // Load categories
+    async function loadCategories() {
+      const grid = document.getElementById('categoriesGrid');
+      try {
+        const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const { db } = await import('./js/firebase-config.js');
+        const snap = await getDocs(collection(db, 'categories'));
+        const categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        if (categories.length) {
+          grid.innerHTML = categories.map(c => {
+            const imgHtml = c.image 
+              ? `<img src="${c.image}" style="width:40px;height:40px;object-item:cover;border-radius:50%;margin-bottom:.5rem;"/>`
+              : `<span class="category-icon">${c.icon || '📦'}</span>`;
+            return `
+            <a href="products.html?category=${c.id}" class="category-card">
+              ${imgHtml}
+              <h3>${c.name}</h3>
+              <p>Explore range</p>
+            </a>`;
+          }).join('');
+        }
+      } catch (e) {
+        console.warn('Categories load error:', e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBestSellers();
+      loadCategories();
+    });
+
+    window.handleNewsletter = function (e) {
+      e.preventDefault();
+      showToast('Thanks for subscribing! 🎉 Watch your inbox for deals.');
+      e.target.reset();
+    };
+  </script>
+</body>
+
+</html>

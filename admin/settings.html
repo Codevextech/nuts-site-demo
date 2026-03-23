@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings – Admin – NutriNuts</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body class="admin-layout">
+
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-nav-logo">🌰 Nutri<span>Nuts</span></div>
+    <div style="padding:0 1.25rem .5rem;"><span style="font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Menu</span></div>
+    <a href="index.html" class="admin-nav-item" id="nav-dashboard"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+    <a href="orders.html" class="admin-nav-item" id="nav-orders"><i class="ri-shopping-cart-2-line"></i> Orders</a>
+    <a href="products.html" class="admin-nav-item" id="nav-products"><i class="ri-store-2-line"></i> Products</a>
+    <a href="categories.html" class="admin-nav-item" id="nav-categories"><i class="ri-function-line"></i> Categories</a>
+    <a href="customers.html" class="admin-nav-item" id="nav-customers"><i class="ri-group-line"></i> Customers</a>
+    <a href="coupons.html" class="admin-nav-item" id="nav-coupons"><i class="ri-ticket-2-line"></i> Coupons</a>
+    <a href="reviews.html" class="admin-nav-item" id="nav-reviews"><i class="ri-star-smile-line"></i> Reviews</a>
+    <a href="reports.html" class="admin-nav-item" id="nav-reports"><i class="ri-bar-chart-box-line"></i> Reports</a>
+    <div style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem;">
+      <a href="settings.html" class="admin-nav-item active" id="nav-settings"><i class="ri-settings-4-line"></i> Settings</a>
+    </div>
+  </aside>
+
+  <main class="admin-main" id="adminMain">
+    <div class="admin-topbar">
+      <button class="nav-icon-btn" id="sidebarToggle"><i class="ri-menu-2-line"></i></button>
+      <div style="flex:1;"></div>
+      <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--brown-light);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">A</div>
+        <span style="font-size:.875rem;font-weight:600;" id="adminName">Admin</span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h1 style="font-size:1.6rem;margin-bottom:.25rem;">Store Settings</h1>
+          <p style="color:var(--text-light);font-size:.9rem;">Manage general store configuration and delivery settings.</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:2rem;">
+        <form id="settingsForm">
+          <h3 style="margin-bottom:1.5rem;">Delivery & Operations</h3>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Base Delivery Charge (₹)</label>
+              <input type="number" id="sDelivCharge" class="form-control" value="49" min="0"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Free Delivery Threshold (₹)</label>
+              <input type="number" id="sFreeThresh" class="form-control" value="499" min="0"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Razorpay Test Key (If integrating live, replace here)</label>
+            <input type="text" id="sRzpKey" class="form-control" value="rzp_test_YourKeyHere" readonly style="opacity:.7;font-family:monospace;"/>
+            <p style="font-size:.75rem;color:var(--text-light);margin-top:.25rem;">To change this, edit `js/firebase-config.js` directly during development.</p>
+          </div>
+
+          <h3 style="margin:2rem 0 1.5rem;border-top:1px solid var(--border);padding-top:1.5rem;">Quick Actions</h3>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline" id="clearCacheBtn"><i class="ri-eraser-line"></i> Clear Browser Cache</button>
+            <button type="button" class="btn btn-primary" id="seedAllBtn"><i class="ri-magic-line"></i> Seed All Demo Data</button>
+            <button type="button" class="btn btn-secondary" onclick="window.open('../index.html', '_blank')"><i class="ri-store-2-line"></i> View Customer Site</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initAdmin } from './js/admin.js';
+    import { showToast } from '../js/auth.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initAdmin();
+      
+      // Load standard settings if we stored them in firestore (optional expansion feature)
+      // Usually stored in a `config/store` doc
+      try {
+        const snap = await getDoc(doc(db,'config','store'));
+        if(snap.exists()) {
+          const d = snap.data();
+          if(d.deliveryCharge !== undefined) document.getElementById('sDelivCharge').value = d.deliveryCharge;
+          if(d.freeThreshold !== undefined) document.getElementById('sFreeThresh').value = d.freeThreshold;
+        }
+      } catch(e) {}
+    });
+
+    document.getElementById('clearCacheBtn').addEventListener('click', () => {
+      localStorage.clear();
+      showToast('Local cache cleared!','success');
+      setTimeout(()=>window.location.reload(), 1500);
+    });
+
+    document.getElementById('seedAllBtn').addEventListener('click', seedFullStore);
+
+    async function seedFullStore() {
+      if(!confirm("This will populate your database with 6 Categories, 12+ Products, and 3 Coupons. It will overwrite existing data with the same IDs. Proceed?")) return;
+      const btn = document.getElementById('seedAllBtn');
+      btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line spinner"></i> Seeding...';
+
+      const categories = [
+        { id: 'almonds', name: 'Almonds', icon: '🌰', description: 'Premium California & Indian Almonds', image: 'https://images.unsplash.com/photo-1508313527902-1571d929be67?w=800&q=80' },
+        { id: 'cashews', name: 'Cashews', icon: '🥜', description: 'Whole & Split King-sized Cashew Nuts', image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800&q=80' },
+        { id: 'pistachios', name: 'Pistachios', icon: '💚', description: 'Salted & Roasted Iranian Pistachios', image: 'https://images.unsplash.com/photo-1519864600-ca20a5630e6c?w=800&q=80' },
+        { id: 'walnuts', name: 'Walnuts', icon: '🟤', description: 'Omega-rich Chilean Walnut Kernels', image: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&q=80' },
+        { id: 'seeds', name: 'Seeds', icon: '🌱', description: 'Healthy Sunflower, Pumpkin & Flax Seeds', image: 'https://images.unsplash.com/photo-1515942400420-2b98fed1f515?w=800&q=80' },
+        { id: 'raisins', name: 'Raisins', icon: '🍇', description: 'Sweet Seedless Green & Black Raisins', image: 'https://images.unsplash.com/photo-1532661026021-ea1d9e2637bf?w=800&q=80' }
+      ];
+
+      const products = [
+        { id: 'almond-premium', name: 'Premium California Almonds', category: 'almonds', prices: { '250g': 299, '500g': 569, '1kg': 1099 }, images: ['https://images.unsplash.com/photo-1508313527902-1571d929be67?w=800'], stock: 150, bestseller: true, rating: 4.9, reviewCount: 124, description: 'Highest grade California almonds, crunchy and full of nutrients.' },
+        { id: 'almond-mamra', name: 'Iranian Mamra Almonds', category: 'almonds', prices: { '250g': 899, '500g': 1699, '1kg': 3299 }, images: ['https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=800'], stock: 45, bestseller: false, rating: 5.0, reviewCount: 42, description: 'Rich in oil and extremely rare, Mamra almonds are the king of health.' },
+        { id: 'cashew-jumbo', name: 'Jumbo Roasted Cashews', category: 'cashews', prices: { '250g': 349, '500g': 649, '1kg': 1249 }, images: ['https://images.unsplash.com/photo-1509610973167-160fa1405101?w=800'], stock: 120, bestseller: true, rating: 4.8, reviewCount: 95, description: 'Buttery and perfectly roasted jumbo cashews from the best farms.' },
+        { id: 'cashew-w320', name: 'Premium White Cashews W320', category: 'cashews', prices: { '250g': 299, '500g': 569, '1kg': 1099 }, images: ['https://images.unsplash.com/photo-1615485500704-8e990f9900f1?w=800'], stock: 200, bestseller: false, rating: 4.7, reviewCount: 68, description: 'Standard high-quality cashews, white and crunchy.' },
+        { id: 'pista-roasted', name: 'Roasted Salted Pistachios', category: 'pistachios', prices: { '250g': 399, '500g': 749, '1kg': 1449 }, images: ['https://images.unsplash.com/photo-1519864600-ca20a5630e6c?w=800'], stock: 100, bestseller: true, rating: 4.9, reviewCount: 110, description: 'Classic roasted pistachios with a touch of pink Himalayan salt.' },
+        { id: 'pista-kernel', name: 'Green Pista Kernels', category: 'pistachios', prices: { '250g': 599, '500g': 1149, '1kg': 2199 }, images: ['https://images.unsplash.com/photo-1601332219904-80ee4f706fae?w=800'], stock: 60, bestseller: false, rating: 4.8, reviewCount: 35, description: 'Shell-less vibrant green pistachio kernels for baking and health.' },
+        { id: 'walnut-kernels', name: 'Chilean Walnut Kernels', category: 'walnuts', prices: { '250g': 449, '500g': 849, '1kg': 1599 }, images: ['https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800'], stock: 85, bestseller: true, rating: 4.8, reviewCount: 82, description: 'Light brown, brain-shaped walnut kernels, rich in Omega-3.' },
+        { id: 'seeds-mix', name: '7-in-1 Mixed Healthy Seeds', category: 'seeds', prices: { '250g': 199, '500g': 369, '1kg': 699 }, images: ['https://images.unsplash.com/photo-1515942400420-2b98fed1f515?w=800'], stock: 300, bestseller: true, rating: 4.9, reviewCount: 145, description: 'A power mix of Pumpkin, Sunflower, Flax, Chia, Watermelon, Seseme & Muskmelon seeds.' },
+        { id: 'raisins-green', name: 'Long Green Raisins', category: 'raisins', prices: { '250g': 149, '500g': 269, '1kg': 499 }, images: ['https://images.unsplash.com/photo-1532661026021-ea1d9e2637bf?w=800'], stock: 180, bestseller: false, rating: 4.7, reviewCount: 54, description: 'Sweet and juicy seedless green raisins, naturally dried.' }
+      ];
+
+      const coupons = [
+        { id: 'WELCOME10', discount: 10, type: 'percent', minOrder: 499, active: true, description: '10% OFF on your first purchase!' },
+        { id: 'HEALTHY20', discount: 20, type: 'percent', minOrder: 999, active: true, description: '20% OFF on orders above ₹999 for healthy snacks.' },
+        { id: 'NUTS50', discount: 50, type: 'flat', minOrder: 500, active: true, description: 'Flat ₹50 OFF on orders above ₹500.' }
+      ];
+
+      const reviews = [
+        { id: 'rev-1', productId: 'almond-premium', name: 'Arun Kumar', rating: 5, comment: 'Best quality almonds I have ever bought online. Super crunchy!', createdAt: new Date() },
+        { id: 'rev-2', productId: 'cashew-jumbo', name: 'Sneha Patel', rating: 5, comment: 'Jumbo size indeed. Very fresh and tasty.', createdAt: new Date() },
+        { id: 'rev-3', productId: 'seeds-mix', name: 'Dr. Rahul', rating: 4, comment: 'Great mix for my daily protein. Delivery was fast too.', createdAt: new Date() }
+      ];
+
+      try {
+        // Seed Categories
+        for (const c of categories) {
+          const { id, ...data } = c;
+          await setDoc(doc(db, 'categories', id), data, { merge: true });
+        }
+        // Seed Products
+        for (const p of products) {
+          const { id, ...data } = p;
+          await setDoc(doc(db, 'products', id), data, { merge: true });
+        }
+        // Seed Coupons
+        for (const cp of coupons) {
+          const { id, ...data } = cp;
+          await setDoc(doc(db, 'coupons', id), data, { merge: true });
+        }
+        // Seed Reviews
+        for (const rv of reviews) {
+          const { id, ...data } = rv;
+          await setDoc(doc(db, 'reviews', id), data, { merge: true });
+        }
+
+        showToast('Successfully seeded all store data!', 'success');
+      } catch(e) {
+        showToast('Error seeding: ' + e.message, 'error');
+      }
+      btn.disabled = false; btn.innerHTML = '<i class="ri-magic-line"></i> Seed All Demo Data';
+    }
+
+    // In a full app, we would add an event listener to the form to save config
+    // document.getElementById('settingsForm').addEventListener('change', ...)
+  </script>
+</body>
+</html>

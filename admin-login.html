@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login – NutriNuts</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .admin-auth-page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem 1.25rem; background:var(--cream); }
+    .admin-auth-box { background:var(--white); border-radius:var(--radius-md); padding:2.5rem 2rem; width:100%; max-width:400px; box-shadow:var(--shadow-lg); border:1px solid var(--border); border-top:4px solid var(--brown); }
+    .admin-logo { text-align:center; margin-bottom:1.5rem; font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700; color:var(--brown); }
+    .admin-logo span { color:var(--text-dark); font-size:1rem; font-family:'Inter',sans-serif; letter-spacing:.05em; margin-left:.5rem; }
+    .password-wrap { position:relative; }
+    .password-wrap .form-control { padding-right:2.8rem; }
+    .toggle-pwd { position:absolute; right:.85rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-light); cursor:pointer; font-size:1rem; }
+  </style>
+</head>
+<body>
+  <div class="admin-auth-page">
+    <div class="admin-auth-box">
+      <div class="admin-logo">🌰 NutriNuts<span>ADMIN</span></div>
+      <p style="text-align:center;font-size:.875rem;color:var(--text-light);margin-bottom:2rem;">Sign in to your admin dashboard</p>
+
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label class="form-label">Admin Email</label>
+          <input id="adminEmail" type="email" class="form-control" placeholder="admin@nutrinuts.in" required autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="password-wrap">
+            <input id="adminPassword" type="password" class="form-control" placeholder="••••••••" required autocomplete="current-password"/>
+            <button type="button" class="toggle-pwd" id="togglePwd"><i class="ri-eye-line"></i></button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="loginBtn" style="margin-top:1rem;">
+          Secure Login <i class="ri-shield-keyhole-line"></i>
+        </button>
+        <p id="errorMsg" style="color:#E53E3E;font-size:.8rem;margin-top:.75rem;text-align:center;display:none;"></p>
+      </form>
+
+      <div style="text-align:center;margin-top:2rem;">
+        <a href="index.html" style="font-size:.8rem;color:var(--text-light);"><i class="ri-arrow-left-line"></i> Back to Shop</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    document.getElementById('togglePwd').addEventListener('click', e => {
+      const input = document.getElementById('adminPassword');
+      const isText = input.type === 'text';
+      input.type = isText ? 'password' : 'text';
+      e.currentTarget.innerHTML = isText ? '<i class="ri-eye-line"></i>' : '<i class="ri-eye-off-line"></i>';
+    });
+
+    document.getElementById('adminLoginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errEl = document.getElementById('errorMsg');
+      errEl.style.display = 'none';
+      btn.disabled = true; btn.textContent = 'Verifying…';
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPassword').value);
+        const snap = await getDoc(doc(db, 'users', cred.user.uid));
+
+        if (!snap.exists() || snap.data().role !== 'admin') {
+          await signOut(auth);
+          throw new Error('Access denied. Admin privileges required.');
+        }
+        window.location.href = 'admin/index.html';
+      } catch(err) {
+        errEl.textContent = err.message.includes('Access denied') ? err.message : 'Invalid credentials or network error.';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.innerHTML = 'Secure Login <i class="ri-shield-keyhole-line"></i>';
+      }
+    });
+
+    // Check if redirect already needed
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists() && snap.data().role === 'admin') {
+          window.location.href = 'admin/index.html';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

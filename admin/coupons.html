@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coupons – Admin – NutriNuts</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body class="admin-layout">
+
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-nav-logo">🌰 Nutri<span>Nuts</span></div>
+    <div style="padding:0 1.25rem .5rem;"><span style="font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Menu</span></div>
+    <a href="index.html" class="admin-nav-item" id="nav-dashboard"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+    <a href="orders.html" class="admin-nav-item" id="nav-orders"><i class="ri-shopping-cart-2-line"></i> Orders</a>
+    <a href="products.html" class="admin-nav-item" id="nav-products"><i class="ri-store-2-line"></i> Products</a>
+    <a href="categories.html" class="admin-nav-item" id="nav-categories"><i class="ri-function-line"></i> Categories</a>
+    <a href="customers.html" class="admin-nav-item" id="nav-customers"><i class="ri-group-line"></i> Customers</a>
+    <a href="coupons.html" class="admin-nav-item active" id="nav-coupons"><i class="ri-ticket-2-line"></i> Coupons</a>
+    <a href="reviews.html" class="admin-nav-item" id="nav-reviews"><i class="ri-star-smile-line"></i> Reviews</a>
+    <a href="reports.html" class="admin-nav-item" id="nav-reports"><i class="ri-bar-chart-box-line"></i> Reports</a>
+    <div style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem;">
+      <a href="settings.html" class="admin-nav-item" id="nav-settings"><i class="ri-settings-4-line"></i> Settings</a>
+    </div>
+  </aside>
+
+  <main class="admin-main" id="adminMain">
+    <div class="admin-topbar">
+      <button class="nav-icon-btn" id="sidebarToggle"><i class="ri-menu-2-line"></i></button>
+      <div style="flex:1;"></div>
+      <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--brown-light);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">A</div>
+        <span style="font-size:.875rem;font-weight:600;" id="adminName">Admin</span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h1 style="font-size:1.6rem;margin-bottom:.25rem;">Discount Coupons</h1>
+        </div>
+        <button class="btn btn-primary" id="addCouponBtn"><i class="ri-add-line"></i> Create Coupon</button>
+      </div>
+
+      <div class="card table-wrapper">
+        <table id="couponsTable">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Discount</th>
+              <th>Min Order (₹)</th>
+              <th>Status</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="couponsBody">
+            <tr><td colspan="5" class="text-center" style="padding:2rem;"><div class="spinner" style="margin:0 auto 1rem;"></div>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="couponModal">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Coupon</h3>
+        <button class="btn" style="padding:.25rem;background:none;font-size:1.2rem;" id="closeModalBtn"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="couponForm">
+          <input type="hidden" id="cOriginalCode"/>
+          
+          <div class="form-group">
+            <label class="form-label">Coupon Code (Uppercase, No spaces) <span style="color:#E53E3E">*</span></label>
+            <input type="text" id="cCode" class="form-control" placeholder="e.g. SAVE20" required style="text-transform:uppercase;"/>
+          </div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Discount Type <span style="color:#E53E3E">*</span></label>
+              <select id="cType" class="form-control">
+                <option value="percent">Percentage (%)</option>
+                <option value="flat">Flat Amount (₹)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Discount Value <span style="color:#E53E3E">*</span></label>
+              <input type="number" id="cValue" class="form-control" required min="1"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Minimum Order Amount (₹) <span style="color:#E53E3E">*</span></label>
+            <input type="number" id="cMinOrder" class="form-control" required min="0" value="0"/>
+          </div>
+
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+              <input type="checkbox" id="cActive" checked/> Active
+            </label>
+          </div>
+
+          <div class="modal-footer" style="padding:1.5rem 0 0;border-top:1px solid var(--border);margin-top:1.5rem;display:flex;justify-content:flex-end;gap:1rem;">
+            <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveCouponBtn">Save Coupon <i class="ri-save-line"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initAdmin } from './js/admin.js';
+    import { showToast } from '../js/auth.js';
+
+    let allCoupons = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initAdmin();
+      await loadCoupons();
+    });
+
+    async function loadCoupons() {
+      const tbody = document.getElementById('couponsBody');
+      try {
+        const snap = await getDocs(collection(db,'coupons'));
+        allCoupons = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderTable();
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-red">Error loading coupons.</td></tr>';
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('couponsBody');
+      if (!allCoupons.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No coupons configured.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = allCoupons.map(c => `
+        <tr>
+          <td><span style="font-family:monospace;font-weight:700;font-size:1rem;color:var(--brown);border:1px dashed var(--brown);padding:.2rem .5rem;border-radius:4px;background:var(--brown-50);">${c.code}</span></td>
+          <td style="font-size:.95rem;font-weight:600;">${c.type==='percent'?c.discount+'% OFF':'₹'+c.discount+' OFF'}</td>
+          <td>₹${c.minAmount}</td>
+          <td>${c.active?'<span class="badge status-delivered">Active</span>':'<span class="badge status-cancelled">Inactive</span>'}</td>
+          <td class="text-right">
+            <button class="btn btn-outline btn-sm edit-btn" data-id="${c.id}" style="padding:.3rem .5rem;"><i class="ri-edit-line"></i></button>
+            <button class="btn btn-sm del-btn" data-id="${c.id}" style="padding:.3rem .5rem;background:#FEE2E2;color:#DC2626;border:none;"><i class="ri-delete-bin-line"></i></button>
+          </td>
+        </tr>`).join('');
+
+      document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', e => openModal(e.currentTarget.dataset.id)));
+      document.querySelectorAll('.del-btn').forEach(btn => btn.addEventListener('click', e => deleteCoupon(e.currentTarget.dataset.id)));
+    }
+
+    // Modal
+    const modal = document.getElementById('couponModal');
+    function closeModal() { modal.classList.remove('active'); document.getElementById('couponForm').reset(); document.getElementById('cOriginalCode').value=''; document.getElementById('cCode').disabled=false; }
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelFormBtn').addEventListener('click', closeModal);
+    
+    document.getElementById('addCouponBtn').addEventListener('click', () => { 
+      document.getElementById('modalTitle').textContent='Add Coupon';
+      modal.classList.add('active'); 
+    });
+
+    function openModal(id) {
+      const c = allCoupons.find(x=>x.id===id);
+      if(!c) return;
+      document.getElementById('modalTitle').textContent = 'Edit Coupon';
+      document.getElementById('cOriginalCode').value = c.id;
+      document.getElementById('cCode').value = c.code;
+      document.getElementById('cCode').disabled = true; // prevent ID change
+      document.getElementById('cType').value = c.type;
+      document.getElementById('cValue').value = c.discount;
+      document.getElementById('cMinOrder').value = c.minAmount;
+      document.getElementById('cActive').checked = c.active;
+      modal.classList.add('active');
+    }
+
+    document.getElementById('couponForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const code = document.getElementById('cCode').value.toUpperCase().replace(/\s+/g,'');
+      if(!code) return showToast('Code required','error');
+
+      const btn = document.getElementById('saveCouponBtn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      const data = {
+        code: code,
+        type: document.getElementById('cType').value,
+        discount: Number(document.getElementById('cValue').value),
+        minAmount: Number(document.getElementById('cMinOrder').value),
+        active: document.getElementById('cActive').checked,
+        updatedAt: new Date()
+      };
+
+      try {
+        await setDoc(doc(db,'coupons',code), data, { merge:true });
+        showToast('Coupon saved!', 'success');
+        closeModal();
+        loadCoupons();
+      } catch(err) {
+        showToast('Error saving: '+err.message, 'error');
+      }
+      btn.disabled = false; btn.innerHTML = 'Save Coupon <i class="ri-save-line"></i>';
+    });
+
+    async function deleteCoupon(id) {
+      if(!confirm(`Delete coupon "${id}"?`)) return;
+      try {
+        await deleteDoc(doc(db,'coupons',id));
+        showToast('Coupon deleted.', 'success');
+        loadCoupons();
+      } catch(e) { showToast('Error deleting.', 'error'); }
+    }
+  </script>
+</body>
+</html>

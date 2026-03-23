@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customers – Admin – NutriNuts</title>
+  <meta name="robots" content="noindex,nofollow"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body class="admin-layout">
+
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-nav-logo">🌰 Nutri<span>Nuts</span></div>
+    <div style="padding:0 1.25rem .5rem;"><span style="font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Menu</span></div>
+    <a href="index.html" class="admin-nav-item" id="nav-dashboard"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+    <a href="orders.html" class="admin-nav-item" id="nav-orders"><i class="ri-shopping-cart-2-line"></i> Orders</a>
+    <a href="products.html" class="admin-nav-item" id="nav-products"><i class="ri-store-2-line"></i> Products</a>
+    <a href="categories.html" class="admin-nav-item" id="nav-categories"><i class="ri-function-line"></i> Categories</a>
+    <a href="customers.html" class="admin-nav-item active" id="nav-customers"><i class="ri-group-line"></i> Customers</a>
+    <a href="coupons.html" class="admin-nav-item" id="nav-coupons"><i class="ri-ticket-2-line"></i> Coupons</a>
+    <a href="reviews.html" class="admin-nav-item" id="nav-reviews"><i class="ri-star-smile-line"></i> Reviews</a>
+    <a href="reports.html" class="admin-nav-item" id="nav-reports"><i class="ri-bar-chart-box-line"></i> Reports</a>
+    <div style="margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem;">
+      <a href="settings.html" class="admin-nav-item" id="nav-settings"><i class="ri-settings-4-line"></i> Settings</a>
+    </div>
+  </aside>
+
+  <main class="admin-main" id="adminMain">
+    <div class="admin-topbar">
+      <button class="nav-icon-btn" id="sidebarToggle"><i class="ri-menu-2-line"></i></button>
+      <div style="flex:1;"></div>
+      <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--brown-light);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">A</div>
+        <span style="font-size:.875rem;font-weight:600;" id="adminName">Admin</span>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 style="font-size:1.6rem;margin-bottom:.25rem;">Customers</h1>
+          <p style="color:var(--text-light);font-size:.9rem;">View registered users and their details.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;padding:1rem 1.5rem;">
+        <div class="form-group" style="margin:0;flex:1;min-width:260px;">
+          <div style="position:relative;">
+            <i class="ri-search-line" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-light);"></i>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or phone..." style="padding-left:2.5rem;"/>
+          </div>
+        </div>
+        <button class="btn btn-outline" id="refreshBtn"><i class="ri-refresh-line"></i></button>
+      </div>
+
+      <div class="card table-wrapper">
+        <table id="customersTable">
+          <thead>
+            <tr>
+              <th>Profile</th>
+              <th>Contact Info</th>
+              <th>Role</th>
+              <th>Addresses Saved</th>
+              <th>Joined At</th>
+            </tr>
+          </thead>
+          <tbody id="customersBody">
+            <tr><td colspan="5" class="text-center" style="padding:2rem;"><div class="spinner" style="margin:0 auto 1rem;"></div>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from '../js/firebase-config.js';
+    import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initAdmin } from './js/admin.js';
+
+    let allUsers = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initAdmin();
+      await loadCustomers();
+    });
+
+    async function loadCustomers() {
+      const tbody = document.getElementById('customersBody');
+      try {
+        const snap = await getDocs(collection(db,'users'));
+        allUsers = snap.docs.map(d=>({id:d.id, ...d.data()}));
+        renderTable();
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-red">Error loading users.</td></tr>';
+      }
+    }
+
+    function renderTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = allUsers;
+      if (q) {
+        filtered = filtered.filter(u => 
+          (u.name||'').toLowerCase().includes(q) || 
+          (u.email||'').toLowerCase().includes(q) || 
+          (u.phone||'').includes(q)
+        );
+      }
+
+      const tbody = document.getElementById('customersBody');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No customers found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const initial = (u.name || u.email || '?')[0].toUpperCase();
+        const roleBadge = u.role === 'admin' ? '<span class="badge badge-brown" style="background:#FEF3C7;color:#D97706;">Admin</span>' : '<span class="badge badge-brown">Customer</span>';
+        const joined = u.createdAt?.toDate?.()?.toLocaleDateString('en-IN') || '—';
+        
+        return `
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--brown-50);color:var(--brown);font-weight:700;display:flex;align-items:center;justify-content:center;">${initial}</div>
+              <div><p style="font-weight:600;font-size:.9rem;">${u.name||'Unnamed User'}</p></div>
+            </div>
+          </td>
+          <td>
+            <p style="font-size:.85rem;color:var(--text-dark);"><i class="ri-mail-line" style="color:var(--text-light);font-size:.8rem;"></i> ${u.email}</p>
+            <p style="font-size:.8rem;color:var(--text-med);"><i class="ri-phone-line" style="color:var(--text-light);font-size:.8rem;"></i> ${u.phone||'N/A'}</p>
+          </td>
+          <td>${roleBadge}</td>
+          <td>${u.addresses?.length || 0}</td>
+          <td style="font-size:.85rem;color:var(--text-med);">${joined}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+    document.getElementById('refreshBtn').addEventListener('click', loadCustomers);
+  </script>
+</body>
+</html>

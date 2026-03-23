@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shopping Cart – NutriNuts</title>
+  <meta name="description" content="Review your cart items and proceed to checkout."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    .cart-layout { display:grid; gap:1.5rem; grid-template-columns:1fr; }
+    @media(min-width:1024px){ .cart-layout { grid-template-columns:1fr 380px; } }
+    .cart-item { display:flex; gap:1rem; padding:1.25rem; border-bottom:1px solid var(--border); align-items:center; }
+    .cart-item:last-child { border-bottom:none; }
+    .cart-item-img { width:80px; height:80px; border-radius:var(--radius-sm); object-fit:cover; flex-shrink:0; background:var(--cream-dark); }
+    .cart-item-info { flex:1; min-width:0; }
+    .cart-item-name { font-weight:600; font-size:.9rem; margin-bottom:.25rem; }
+    .cart-item-meta { font-size:.78rem; color:var(--text-light); }
+    .cart-item-price { font-weight:700; color:var(--brown); }
+    .cart-item-actions { display:flex; flex-direction:column; align-items:flex-end; gap:.75rem; flex-shrink:0; }
+    .remove-btn { background:none; border:none; color:var(--text-light); font-size:.8rem; cursor:pointer; transition:var(--transition); }
+    .remove-btn:hover { color:#E53E3E; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">🌰 Nutri<span>Nuts</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle"><i class="ri-moon-line"></i></button>
+        <a href="auth.html" class="nav-icon-btn" id="nav-auth-link"><i class="ri-user-line"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <h1 style="margin-bottom:1.5rem;">Shopping Cart <span id="cartCountHeading" style="font-size:1rem;font-weight:400;color:var(--text-light);font-family:'Inter',sans-serif;"></span></h1>
+      <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="card" id="cartItemsBox" style="overflow:hidden;"></div>
+
+        <!-- Order Summary -->
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="order-summary">
+            <h3 style="margin-bottom:1rem;font-size:1.05rem;">Order Summary</h3>
+            <div class="summary-row"><span>Subtotal</span><span id="summarySubtotal">₹0</span></div>
+            <div class="summary-row" id="discountRow" style="display:none;color:var(--green);"><span>Discount</span><span id="summaryDiscount">-₹0</span></div>
+            <div class="summary-row"><span>Delivery</span><span id="summaryDelivery">₹49</span></div>
+            <div class="summary-row total"><span>Total</span><span id="summaryTotal">₹0</span></div>
+
+            <!-- Coupon -->
+            <div class="form-group" style="margin-top:1.25rem;">
+              <label class="form-label">Coupon Code</label>
+              <div class="coupon-row">
+                <input type="text" id="couponInput" class="form-control" placeholder="WELCOME10"/>
+                <button class="btn btn-outline btn-sm" id="applyCouponBtn" style="flex-shrink:0;">Apply</button>
+              </div>
+              <p id="couponMsg" style="font-size:.75rem;margin-top:.35rem;"></p>
+            </div>
+            <button class="btn btn-primary btn-full btn-lg" id="checkoutBtn" style="margin-top:.5rem;">
+              Proceed to Checkout <i class="ri-arrow-right-line"></i>
+            </button>
+            <a href="products.html" class="btn btn-secondary btn-full" style="margin-top:.75rem;text-align:center;">Continue Shopping</a>
+          </div>
+
+          <!-- Trust badges -->
+          <div style="background:var(--green-50);border-radius:var(--radius-md);padding:1rem;border:1px solid rgba(58,107,53,.15);">
+            <p style="font-size:.78rem;font-weight:600;color:var(--green);margin-bottom:.5rem;">🔒 Safe & Secure Shopping</p>
+            <p style="font-size:.75rem;color:var(--text-light);">All transactions are secured with 256-bit SSL encryption.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="bottom-nav-item"><i class="ri-home-5-line"></i><span>Home</span></a>
+    <a href="products.html" class="bottom-nav-item"><i class="ri-store-2-line"></i><span>Shop</span></a>
+    <a href="cart.html" class="bottom-nav-item active"><i class="ri-shopping-cart-2-fill"></i><span>Cart</span></a>
+    <a href="dashboard.html" class="bottom-nav-item"><i class="ri-user-line"></i><span>Account</span></a>
+  </nav>
+  <div id="toast-container"></div>
+  <a href="https://wa.me/919999999999" class="whatsapp-float" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i></a>
+
+  <script type="module">
+    import { initNavAuth, initTheme, showToast } from './js/auth.js';
+    import { getCart, removeFromCart, updateQty, getCartSubtotal, applyCoupon, saveCart, updateCartBadge } from './js/cart.js';
+
+    initTheme(); initNavAuth(); updateCartBadge();
+
+    let couponData = null;
+    const DELIVERY_FREE_THRESHOLD = 499;
+
+    function renderCart() {
+      const cart = getCart();
+      const box = document.getElementById('cartItemsBox');
+      document.getElementById('cartCountHeading').textContent = cart.length ? `(${cart.reduce((s,i)=>s+i.qty,0)} items)` : '';
+
+      if (!cart.length) {
+        box.innerHTML = `<div class="empty-state"><i class="ri-shopping-basket-2-line"></i><h3>Your cart is empty</h3><p>Add some delicious nuts to get started!</p><a href="products.html" class="btn btn-primary" style="margin-top:.5rem;">Browse Products</a></div>`;
+        updateSummary(0);
+        return;
+      }
+
+      box.innerHTML = cart.map(item => `
+        <div class="cart-item" data-id="${item.productId}" data-weight="${item.weight}">
+          <img class="cart-item-img" src="${item.image||'https://images.unsplash.com/photo-1508313527902-1571d929be67?w=200&q=80'}" alt="${item.name}"/>
+          <div class="cart-item-info">
+            <p class="cart-item-name">${item.name}</p>
+            <p class="cart-item-meta">Weight: ${item.weight} · ₹${item.price} each</p>
+          </div>
+          <div class="cart-item-actions">
+            <span class="cart-item-price">₹${(item.price * item.qty).toFixed(0)}</span>
+            <div class="qty-control">
+              <button class="qty-btn" data-action="minus">−</button>
+              <span class="qty-value">${item.qty}</span>
+              <button class="qty-btn" data-action="plus">+</button>
+            </div>
+            <button class="remove-btn"><i class="ri-delete-bin-line"></i> Remove</button>
+          </div>
+        </div>`).join('');
+
+      // Bindings
+      box.querySelectorAll('.cart-item').forEach(row => {
+        const pid = row.dataset.id, wt = row.dataset.weight;
+        row.querySelector('[data-action="minus"]').addEventListener('click', () => { updateQty(pid,wt,-1); renderCart(); });
+        row.querySelector('[data-action="plus"]').addEventListener('click', () => { updateQty(pid,wt,1); renderCart(); });
+        row.querySelector('.remove-btn').addEventListener('click', () => { removeFromCart(pid,wt); renderCart(); showToast('Item removed from cart','info'); });
+      });
+
+      updateSummary(getCartSubtotal());
+    }
+
+    function updateSummary(subtotal) {
+      const delivery = subtotal >= DELIVERY_FREE_THRESHOLD || subtotal === 0 ? 0 : 49;
+      let discount = 0;
+      if (couponData) {
+        discount = couponData.type === 'percent' ? Math.round(subtotal * couponData.discount / 100) : couponData.discount;
+        document.getElementById('discountRow').style.display = 'flex';
+        document.getElementById('summaryDiscount').textContent = `-₹${discount}`;
+      } else {
+        document.getElementById('discountRow').style.display = 'none';
+      }
+      const total = Math.max(0, subtotal - discount + delivery);
+      document.getElementById('summarySubtotal').textContent = `₹${subtotal.toFixed(0)}`;
+      document.getElementById('summaryDelivery').textContent = delivery === 0 ? 'FREE 🎉' : `₹${delivery}`;
+      document.getElementById('summaryTotal').textContent = `₹${total.toFixed(0)}`;
+      // Store for checkout
+      localStorage.setItem('ns_order_meta', JSON.stringify({ subtotal, discount, delivery, total, coupon: couponData?.code || '' }));
+    }
+
+    // Coupon
+    document.getElementById('applyCouponBtn').addEventListener('click', async () => {
+      const code = document.getElementById('couponInput').value.trim();
+      if (!code) return;
+      const msg = document.getElementById('couponMsg');
+      try {
+        couponData = await applyCoupon(code);
+        msg.style.color = 'var(--green)';
+        msg.textContent = `✓ Coupon applied: ${couponData.discount}% OFF`;
+        showToast(`Coupon "${code}" applied! 🎉`);
+        renderCart();
+      } catch(e) {
+        msg.style.color = '#E53E3E';
+        msg.textContent = `✗ ${e.message}`;
+        couponData = null;
+        renderCart();
+      }
+    });
+
+    // Checkout
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      if (!getCart().length) { showToast('Add items to cart first!','error'); return; }
+      window.location.href = 'checkout.html';
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>
