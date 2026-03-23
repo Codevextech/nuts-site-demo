@@ -207,29 +207,47 @@
         <p>Handpicked selection of premium nuts, seeds, and dry fruits for every taste and need.</p>
       </div>
       <div class="category-grid" id="categoriesGrid">
-        <a href="products.html?category=Almonds" class="category-card"><span class="category-icon">🌰</span>
-          <h3>Almonds</h3>
-          <p>12 products</p>
+        <a href="products.html?category=Almonds" class="category-card">
+          <div class="category-bg"><span class="category-icon">🌰</span></div>
+          <div class="category-content">
+            <h3>Almonds</h3>
+            <p>12 products</p>
+          </div>
         </a>
-        <a href="products.html?category=Cashews" class="category-card"><span class="category-icon">🥜</span>
-          <h3>Cashews</h3>
-          <p>8 products</p>
+        <a href="products.html?category=Cashews" class="category-card">
+          <div class="category-bg"><span class="category-icon">🥜</span></div>
+          <div class="category-content">
+            <h3>Cashews</h3>
+            <p>8 products</p>
+          </div>
         </a>
-        <a href="products.html?category=Pistachios" class="category-card"><span class="category-icon">💚</span>
-          <h3>Pistachios</h3>
-          <p>6 products</p>
+        <a href="products.html?category=Pistachios" class="category-card">
+          <div class="category-bg"><span class="category-icon">💚</span></div>
+          <div class="category-content">
+            <h3>Pistachios</h3>
+            <p>6 products</p>
+          </div>
         </a>
-        <a href="products.html?category=Walnuts" class="category-card"><span class="category-icon">🟤</span>
-          <h3>Walnuts</h3>
-          <p>5 products</p>
+        <a href="products.html?category=Walnuts" class="category-card">
+          <div class="category-bg"><span class="category-icon">🟤</span></div>
+          <div class="category-content">
+            <h3>Walnuts</h3>
+            <p>5 products</p>
+          </div>
         </a>
-        <a href="products.html?category=Seeds" class="category-card"><span class="category-icon">🌱</span>
-          <h3>Seeds</h3>
-          <p>10 products</p>
+        <a href="products.html?category=Seeds" class="category-card">
+          <div class="category-bg"><span class="category-icon">🌱</span></div>
+          <div class="category-content">
+            <h3>Seeds</h3>
+            <p>10 products</p>
+          </div>
         </a>
-        <a href="products.html?category=Raisins" class="category-card"><span class="category-icon">🍇</span>
-          <h3>Raisins</h3>
-          <p>7 products</p>
+        <a href="products.html?category=Raisins" class="category-card">
+          <div class="category-bg"><span class="category-icon">🍇</span></div>
+          <div class="category-content">
+            <h3>Raisins</h3>
+            <p>7 products</p>
+          </div>
         </a>
       </div>
     </div>
@@ -494,14 +512,16 @@
 
         if (categories.length) {
           grid.innerHTML = categories.map(c => {
-            const imgHtml = c.image 
-              ? `<img src="${c.image}" style="width:40px;height:40px;object-item:cover;border-radius:50%;margin-bottom:.5rem;"/>`
-              : `<span class="category-icon">${c.icon || '📦'}</span>`;
+            const bgHtml = c.image 
+              ? `<div class="category-bg"><img src="${c.image}" alt="${c.name}" loading="lazy"/></div>`
+              : `<div class="category-bg"><span class="category-icon">${c.icon || '🌰'}</span></div>`;
             return `
             <a href="products.html?category=${c.id}" class="category-card">
-              ${imgHtml}
-              <h3>${c.name}</h3>
-              <p>Explore range</p>
+              ${bgHtml}
+              <div class="category-content">
+                <h3>${c.name}</h3>
+                <p>Explore Range</p>
+              </div>
             </a>`;
           }).join('');
         }
